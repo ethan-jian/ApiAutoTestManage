@@ -30,7 +30,7 @@ class Reponse(object):
         self.message = "操作成功"
         self.data = data
 
-        self.common_response()
+        return self.common_response()
 
 
     def response_failed(self):
@@ -42,5 +42,18 @@ class Reponse(object):
         self.message = "操作失败"
         self.data = None
 
-        self.common_response()
+        return self.common_response()
 
+# def common_response():
+#     """
+#     通用的返回接口数据结构
+#     :return:
+#     """
+#     response = {
+#         "totalCount": 0,
+#         "code": 200,
+#         "message": "操作成功",
+#         "data": None
+#     }
+#
+#     return JsonResponse(response, safe=False)

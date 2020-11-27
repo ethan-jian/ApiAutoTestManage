@@ -45,6 +45,7 @@ def user_register(request, *args, **kwargs):
     body = request.body
     data = json.loads(body, encoding='utf-8')
     form = UserForm(data)
+    print(form)
     if not form.is_valid():
         return Reponse().response_failed()
 
@@ -55,9 +56,8 @@ def user_register(request, *args, **kwargs):
     if not user:
         return Reponse().response_failed()
     else:
-        login(request, user)  # 登录持久化
+        # login(request, user)  # 登录持久化
         return Reponse().response_success(totalCount=0, data=None)
-
 
 
 @require_http_methods(['DELETE'])
