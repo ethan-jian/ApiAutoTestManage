@@ -45,7 +45,6 @@ def user_register(request, *args, **kwargs):
     body = request.body
     data = json.loads(body, encoding='utf-8')
     form = UserForm(data)
-    print(form)
     if not form.is_valid():
         return Reponse().response_failed()
 
