@@ -85,9 +85,11 @@ def get_user_info(request, *args, **kwargs):
     if not user:
         return Reponse().response_failed()
     if user.is_authenticated:  # 判断用户是否已经通过校验
-        return Reponse().response_success(totalCount=1, data={
+        return Reponse().response_success(totalCount=1, data=[{
             'id': user.id,
-            'name': user.username
-        })
+            'create_time': user.date_joined,
+            'last_login_time': user.last_login,
+            'name': user.username,
+        }])
     else:
         return Reponse().response_failed()
