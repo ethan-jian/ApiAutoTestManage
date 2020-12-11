@@ -30,9 +30,8 @@ from django.db import models
 #         return self.title
 
 class Project(models.Model):
-    # id = db.Column(db.Integer(), primary_key=True, comment='主键，自增')
     user_id = models.IntegerField('userid', default=0)
-    name = models.CharField('项目名称', blank=True, max_length=64, unique=True, default='')
+    name = models.CharField('项目名称', blank=False, max_length=64, unique=True)
     host = models.CharField('测试环境', max_length=1024, blank=True)
     host_two = models.CharField('开发环境', max_length=1024)
     host_three = models.CharField('线上环境', max_length=1024)
@@ -41,7 +40,7 @@ class Project(models.Model):
     principal = models.CharField(max_length=16, blank=True)
     variables = models.CharField('项目的公共变量', max_length=2048)
     headers = models.CharField('项目的公共头部信息', max_length=1024)
-    func_file = models.CharField('函数文件', max_length=64, blank=True, unique=True)
+    func_file = models.CharField('函数文件', max_length=64, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
 
