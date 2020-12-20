@@ -2,6 +2,8 @@ import json
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.forms import model_to_dict
+from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 
 from interface_app.forms.user_form import UserForm
@@ -73,7 +75,7 @@ def user_logout(request, *args, **kwargs):
 
 
 @require_http_methods(['GET'])
-def get_user_info(request, *args, **kwargs):
+def get_login_user_info(request, *args, **kwargs):
     """
     获取已登录的用户信息
     :param request:
@@ -93,3 +95,21 @@ def get_user_info(request, *args, **kwargs):
         }])
     else:
         return Reponse().response_failed()
+
+@require_http_methods(['GET'])
+def get_user_info(request, *args, **kwargs):
+    """
+    获取用户信息
+    :param request:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    user_list = User.objects.all().values()
+    total = len(user_list)
+    if not user_list:
+        return Reponse().response_failed()
+    else:
+        user_list = Reponse().response_success(total, list(user_list))
+
+    return user_list
