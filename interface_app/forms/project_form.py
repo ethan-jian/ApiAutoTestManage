@@ -15,5 +15,6 @@ class ProjectForm(forms.Form):
     variables = forms.CharField(max_length=2048, required=False)
     headers = forms.CharField(max_length=1024, required=False)
     func_file = forms.CharField(max_length=64, required=False)
+    desc = forms.CharField(max_length=1024, required=False)
 
 

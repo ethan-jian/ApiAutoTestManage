@@ -1,4 +1,6 @@
 import json
+
+from django.db import IntegrityError
 from django.views.decorators.http import require_http_methods
 from interface_app.forms.project_form import ProjectForm
 from interface_app.libs.reponse import Reponse
@@ -13,14 +15,33 @@ def add_project(requset, *args, **kwargs):
     form = ProjectForm(data)
     if not form.is_valid():
         Reponse().response_failed()
+    try:
+        service = Project.objects.create(**form.cleaned_data)
+    except IntegrityError:
+        return Reponse().response_failed(message='项目已存在')
+    else:
+        if not service:
+            return Reponse().response_failed()
+        else:
+            return Reponse().response_success(0, None)
 
-    service = Project.objects.create(**form.cleaned_data)
-    if not service:
+@require_http_methods(['GET'])
+def get_project_list_info(request, *args, **kwargs):
+    """
+    获取项目列表
+    :param request:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    project_list = Project.objects.all().values()
+    total = len(project_list)
+    if not project_list:
         return Reponse().response_failed()
     else:
-        return Reponse().response_success(0, None)
+        project_list = Reponse().response_success(total, list(project_list))
 
-
+    return project_list
 
 
 @require_http_methods(['POST'])

@@ -44,6 +44,7 @@ class Project(models.Model):
     func_file = models.CharField('函数文件', max_length=64, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
+    desc = models.CharField('项目描述', max_length=1024)
 #
 # #
 # # class Module(models):

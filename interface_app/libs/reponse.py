@@ -33,13 +33,13 @@ class Reponse(object):
         return self.common_response()
 
 
-    def response_failed(self):
+    def response_failed(self, message='操作失败'):
         """
         :return:
         """
         self.totalCount = 0
         self.code = 500
-        self.message = "操作失败"
+        self.message = message
         self.data = None
 
         return self.common_response()
