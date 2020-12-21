@@ -24,6 +24,7 @@ urlpatterns = [
     path(r'api/user/login/', user_view.user_login),
     path(r'api/user/register/', user_view.user_register),
     path(r'api/user/logout/', user_view.user_logout),
+    path(r'api/login_user/info/', user_view.get_login_user_info),
     path(r'api/user/info/', user_view.get_user_info),
     path(r'api/add/project/', project_view.add_project),
 ]
