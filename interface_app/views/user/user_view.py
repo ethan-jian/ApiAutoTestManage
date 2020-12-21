@@ -54,6 +54,7 @@ def user_register(request, *args, **kwargs):
         return Reponse().response_failed()
 
     user = User.objects.create_user(username=form.cleaned_data["username"], password=form.cleaned_data["password"])
+
     if not user:
         return Reponse().response_failed()
     else:
