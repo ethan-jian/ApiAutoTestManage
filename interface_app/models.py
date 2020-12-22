@@ -33,7 +33,8 @@ class Project(models.Model):
     pass
     user_id = models.IntegerField('userid', default=0)
     name = models.CharField('项目名称', blank=False, max_length=64, unique=True)
-    environment = models.CharField('环境', max_length=1024, blank=True)
+    environment = models.CharField('环境', max_length=1024, blank=False)
+    environment_type = models.CharField('环境标识', max_length=1, blank=False)
     # host_two = models.CharField('开发环境', max_length=1024)
     # host_three = models.CharField('线上环境', max_length=1024)
     # host_four = models.CharField('备用环境', max_length=1024)

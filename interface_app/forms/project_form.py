@@ -6,7 +6,8 @@ class ProjectForm(forms.Form):
     name = forms.CharField(max_length=64,
                            min_length=1,
                            required=True)
-    environment = forms.CharField(max_length=1024, required=False)
+    environment = forms.CharField(max_length=1024, required=True)
+    environment_type = forms.CharField(max_length=1, required=True)
     # host_two = forms.CharField(max_length=1024, required=False)
     # host_three = forms.CharField(max_length=1024, required=False)
     # host_four = forms.CharField(max_length=1024, required=False)
