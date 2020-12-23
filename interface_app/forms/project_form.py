@@ -2,7 +2,7 @@ from django import forms
 
 
 class ProjectForm(forms.Form):
-    user_id = forms.IntegerField(required=True)
+    user_id_id = forms.IntegerField(required=True)
     name = forms.CharField(max_length=64,
                            min_length=1,
                            required=True)
