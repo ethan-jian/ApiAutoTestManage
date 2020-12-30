@@ -5,6 +5,7 @@ from django.views.decorators.http import require_http_methods
 from interface_app.forms.project_form import ProjectForm
 from interface_app.libs.reponse import Reponse
 from interface_app.models import Project
+from django.contrib.auth.models import User
 
 
 @require_http_methods(['POST'])
@@ -35,11 +36,15 @@ def get_project_list_info(request, *args, **kwargs):
     :return:
     """
     project_list = Project.objects.all().values()
+    project_list = list(project_list)
+    for n in project_list:
+        n['user_name'] = User.objects.get(id=n['user_id_id']).username
     total = len(project_list)
     if not project_list:
         return Reponse().response_failed()
     else:
-        project_list = Reponse().response_success(total, list(project_list))
+        project_list = Reponse().response_success(total, project_list)
+
 
     return project_list
 

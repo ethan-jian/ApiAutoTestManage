@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 #
 #
 # # class Publish(models.Model):
@@ -31,14 +32,9 @@ from django.db import models
 #
 class Project(models.Model):
     pass
-    user_id = models.IntegerField('userid', default=0)
     name = models.CharField('项目名称', blank=False, max_length=64, unique=True)
     environment = models.CharField('环境', max_length=1024, blank=False)
     environment_type = models.CharField('环境标识', max_length=1, blank=False)
-    # host_two = models.CharField('开发环境', max_length=1024)
-    # host_three = models.CharField('线上环境', max_length=1024)
-    # host_four = models.CharField('备用环境', max_length=1024)
-    # environment_choice = models.CharField('环境选择，first为测试，以此类推', max_length=16)
     principal = models.CharField(max_length=16, blank=True)
     variables = models.CharField('项目的公共变量', max_length=2048)
     headers = models.CharField('项目的公共头部信息', max_length=1024)
@@ -46,6 +42,10 @@ class Project(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     desc = models.CharField('项目描述', max_length=1024)
+    # user_id = models.IntegerField('userid', default=0)
+    user_id = models.ForeignKey(User, to_field='id', default=1, on_delete=models.DO_NOTHING)
+
+
 #
 # #
 # # class Module(models):
