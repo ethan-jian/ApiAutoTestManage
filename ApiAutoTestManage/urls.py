@@ -28,4 +28,6 @@ urlpatterns = [
     path(r'api/user/info/', user_view.get_user_info),
     path(r'api/add/project/', project_view.add_project),
     path(r'api/list/project/', project_view.get_project_list_info),
+    path(r'api/delete/project/', project_view.delete_project),
+
 ]

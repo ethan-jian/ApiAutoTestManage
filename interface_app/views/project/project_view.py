@@ -1,5 +1,5 @@
 import json
-
+import re
 from django.db import IntegrityError
 from django.views.decorators.http import require_http_methods
 from interface_app.forms.project_form import ProjectForm
@@ -26,6 +26,7 @@ def add_project(requset, *args, **kwargs):
         else:
             return Reponse().response_success(0, None)
 
+
 @require_http_methods(['GET'])
 def get_project_list_info(request, *args, **kwargs):
     """
@@ -45,7 +46,6 @@ def get_project_list_info(request, *args, **kwargs):
     else:
         project_list = Reponse().response_success(total, project_list)
 
-
     return project_list
 
 
@@ -56,6 +56,11 @@ def edit_project(requset, *args, **kwargs):
 
 @require_http_methods(['POST'])
 def delete_project(requset, *args, **kwargs):
-    pass
 
+    ids = json.loads(requset.body, encoding='utf-8').get('ids')
+    print(ids)
+    for id in ids:
+        Project.objects.filter(id=int(id)).delete()
+
+    return Reponse().response_success(0, None)
 
