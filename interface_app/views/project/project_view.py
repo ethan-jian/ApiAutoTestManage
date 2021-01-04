@@ -6,11 +6,12 @@ from interface_app.forms.project_form import ProjectForm
 from interface_app.libs.reponse import Reponse
 from interface_app.models import Project
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
 @require_http_methods(['POST'])
-def add_project(requset, *args, **kwargs):
-    body = requset.body
+def add_project(request, *args, **kwargs):
+    body = request.body
     data = json.loads(body, encoding='utf-8')
     print(data)
     form = ProjectForm(data)
@@ -27,7 +28,7 @@ def add_project(requset, *args, **kwargs):
             return Reponse().response_success(0, None)
 
 
-@require_http_methods(['GET'])
+@require_http_methods(['POST'])
 def get_project_list_info(request, *args, **kwargs):
     """
     获取项目列表
@@ -36,28 +37,57 @@ def get_project_list_info(request, *args, **kwargs):
     :param kwargs:
     :return:
     """
-    project_list = Project.objects.all().values()
-    project_list = list(project_list)
+    body = request.body
+    data = json.loads(body, encoding='utf-8')
+    kw = data.get('kw', '')
+    current_page = data.get('currentPage', 1)
+    page_size = data.get('pageSize', 10)
+    sort = data.get('sort')
+    prefix = ''
+    if sort[0].get('direct').upper() == 'DESC':
+        prefix = '-'
+    order_field = prefix + sort[0].get('field')
+
+    project_set = Project.objects.filter(name__contains=kw).order_by(order_field).values()
+    total_count = len(project_set)
+    paginator = Paginator(project_set, page_size)
+    try:
+        project_set = paginator.page(current_page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        project_set = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        project_set = paginator.page(1)
+
+    project_list = list(project_set.object_list)
+
+
     for n in project_list:
         n['user_name'] = User.objects.get(id=n['user_id_id']).username
-    total = len(project_list)
-    if not project_list:
-        return Reponse().response_failed()
-    else:
-        project_list = Reponse().response_success(total, project_list)
+    project_list = Reponse().response_success(total_count, project_list)
 
     return project_list
 
 
 @require_http_methods(['POST'])
-def edit_project(requset, *args, **kwargs):
-    pass
+def edit_project(request, *args, **kwargs):
+    body = request.body
+    data = json.loads(body, encoding='utf-8')
+    id = data.get('id', None)
+    total_count = 1
+    if id:
+        project_set = Project.objects.filter(id=id).values()
+        print(project_set)
+        project_list = Reponse().response_success(total_count, list(project_set))
+
+    return project_list
 
 
 @require_http_methods(['POST'])
-def delete_project(requset, *args, **kwargs):
+def delete_project(request, *args, **kwargs):
 
-    ids = json.loads(requset.body, encoding='utf-8').get('ids')
+    ids = json.loads(request.body, encoding='utf-8').get('ids')
     print(ids)
     for id in ids:
         Project.objects.filter(id=int(id)).delete()
