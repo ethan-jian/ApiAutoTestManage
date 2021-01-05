@@ -69,19 +69,68 @@ def get_project_list_info(request, *args, **kwargs):
 
     return project_list
 
-
 @require_http_methods(['POST'])
-def edit_project(request, *args, **kwargs):
+def cat_project_detail(request, *args, **kwargs):
+    """
+    查询某个项目信息
+    :param request:
+    :param args:
+    :param kwargs:
+    :return:
+    """
     body = request.body
     data = json.loads(body, encoding='utf-8')
     id = data.get('id', None)
     total_count = 1
     if id:
         project_set = Project.objects.filter(id=id).values()
-        print(project_set)
-        project_list = Reponse().response_success(total_count, list(project_set))
+        project_list = list(project_set)
+        for n in project_list:
+            n['user_name'] = User.objects.get(id=n['user_id_id']).username
+        project_list = Reponse().response_success(total_count, project_list)
 
     return project_list
+
+
+@require_http_methods(['POST'])
+def edit_project(request, *args, **kwargs):
+    """
+    编辑项目
+    :param request:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    body = request.body
+    data = json.loads(body, encoding='utf-8')
+    id = data.get('id', None)
+    name = data.get('bookname')
+    test_environment = data.get('price')
+    dev_environment = data.get('Date')
+    online_environment = data.get('auth')
+    bak_environment = data.get('publish')
+    environment_type = data.get('environment_type')
+    principal = data.get('principal')
+    variables = data.get('variables')
+    headers = data.get('headers')
+    func_file = data.get('func_file')
+    desc = data.get('desc')
+    user_id_id = data.get('user_id_id')
+    Project.objects.filter(id=id).update(name=name,
+                                         test_environment=test_environment,
+                                         dev_environment=dev_environment,
+                                         online_environment=online_environment,
+                                         bak_environment=bak_environment,
+                                         environment_type=environment_type,
+                                         principal=principal,
+                                         variables=variables,
+                                         headers=headers,
+                                         func_file=func_file,
+                                         desc=desc,
+                                         user_id_id=user_id_id
+                                         )
+
+    return Reponse().response_success(0, None)
 
 
 @require_http_methods(['POST'])
