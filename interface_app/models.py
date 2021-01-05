@@ -33,7 +33,10 @@ from django.contrib.auth.models import User
 class Project(models.Model):
     pass
     name = models.CharField('项目名称', blank=False, max_length=64, unique=True)
-    environment = models.CharField('环境', max_length=1024, blank=False)
+    test_environment = models.CharField('测试环境', max_length=1024, blank=True)
+    dev_environment = models.CharField('开发环境', max_length=1024, blank=True)
+    online_environment = models.CharField('线上环境', max_length=1024, blank=True)
+    bak_environment = models.CharField('备用环境', max_length=1024, blank=True)
     environment_type = models.CharField('环境标识', max_length=1, blank=False)
     principal = models.CharField(max_length=16, blank=True)
     variables = models.CharField('项目的公共变量', max_length=2048)

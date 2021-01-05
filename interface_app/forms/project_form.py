@@ -6,12 +6,11 @@ class ProjectForm(forms.Form):
     name = forms.CharField(max_length=64,
                            min_length=1,
                            required=True)
-    environment = forms.CharField(max_length=1024, required=True)
+    test_environment = forms.CharField(max_length=1024, required=False)
+    dev_environment = forms.CharField(max_length=1024, required=False)
+    online_environment = forms.CharField(max_length=1024, required=False)
+    bak_environment = forms.CharField(max_length=1024, required=False)
     environment_type = forms.CharField(max_length=1, required=True)
-    # host_two = forms.CharField(max_length=1024, required=False)
-    # host_three = forms.CharField(max_length=1024, required=False)
-    # host_four = forms.CharField(max_length=1024, required=False)
-    # environment_choice = forms.CharField(max_length=16)
     principal = forms.CharField(max_length=16, required=False)
     variables = forms.CharField(max_length=2048, required=False)
     headers = forms.CharField(max_length=1024, required=False)
