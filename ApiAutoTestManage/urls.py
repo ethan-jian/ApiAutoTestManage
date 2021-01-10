@@ -16,20 +16,25 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from interface_app.views.project import project_view
-from interface_app.views.user import user_view
+from interface_app.views import project_view, user_view, api_view
 
 urlpatterns = [
-    path(r'admin/', admin.site.urls),
-    path(r'api/user/login/', user_view.user_login),
-    path(r'api/user/register/', user_view.user_register),
-    path(r'api/user/logout/', user_view.user_logout),
-    path(r'api/login_user/info/', user_view.get_login_user_info),
-    path(r'api/user/info/', user_view.get_user_info),
-    path(r'api/add/project/', project_view.add_project),
-    path(r'api/list/project/', project_view.get_project_list_info),
-    path(r'api/detail/project/', project_view.cat_project_detail),
-    path(r'api/edit/project/', project_view.edit_project),
-    path(r'api/delete/project/', project_view.delete_project),
+    path(r'api/admin/', admin.site.urls),
+    path(r'api/UserLogin/', user_view.user_login),
+    path(r'api/UserRegister/', user_view.user_register),
+    path(r'api/UserLogout/', user_view.user_logout),
+    path(r'api/LoginUserInfo/', user_view.get_login_user_info),
+    path(r'api/UserInfo/', user_view.get_user_info),
+    path(r'api/AddProject/', project_view.add_project),
+    path(r'api/ListProject/', project_view.get_project_list_info),
+    path(r'api/DetailProject/', project_view.cat_project_detail),
+    path(r'api/EditProject/', project_view.edit_project),
+    path(r'api/DeleteProject/', project_view.delete_project),
+
+    path(r'api/AddApi/', api_view.add_api),
+    path(r'api/ListApi/', api_view.get_api_list_info),
+    path(r'api/DetailApi/', api_view.cat_api_detail),
+    path(r'api/EditApi/', api_view.edit_api),
+    path(r'api/DeleteApi/', api_view.delete_api),
 
 ]

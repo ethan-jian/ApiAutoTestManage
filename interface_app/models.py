@@ -31,7 +31,7 @@ from django.contrib.auth.models import User
 # #         return self.title
 #
 class Project(models.Model):
-    pass
+
     name = models.CharField('项目名称', blank=False, max_length=64, unique=True)
     test_environment = models.CharField('测试环境', max_length=1024, blank=True)
     dev_environment = models.CharField('开发环境', max_length=1024, blank=True)
@@ -45,8 +45,20 @@ class Project(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     desc = models.CharField('项目描述', max_length=1024)
-    # user_id = models.IntegerField('userid', default=0)
     user_id = models.ForeignKey(User, to_field='id', default=1, on_delete=models.DO_NOTHING)
+
+class Module(models.Model):
+
+    name = models.CharField('项目名称', blank=False, max_length=64, unique=True)
+    porject = models.ForeignKey(Project, to_field='id', default=1, on_delete=models.DO_NOTHING)
+
+class Api(models.Model):
+
+    name = models.CharField('接口名称', blank=False, max_length=64, unique=True)
+    url = models.CharField('接口地址', blank=False, max_length=64, unique=False)
+    desc = models.CharField('接口描述', max_length=1024)
+    module = models.ForeignKey(Module, to_field='id', default=1, on_delete=models.DO_NOTHING)
+    project = models.ForeignKey(Project, to_field='id', default=1, on_delete=models.DO_NOTHING)
 
 
 #

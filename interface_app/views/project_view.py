@@ -1,5 +1,4 @@
 import json
-import re
 from django.db import IntegrityError
 from django.views.decorators.http import require_http_methods
 from interface_app.forms.project_form import ProjectForm
@@ -13,7 +12,6 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 def add_project(request, *args, **kwargs):
     body = request.body
     data = json.loads(body, encoding='utf-8')
-    print(data)
     form = ProjectForm(data)
     if not form.is_valid():
         Reponse().response_failed()
