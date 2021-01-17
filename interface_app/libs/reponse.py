@@ -19,7 +19,7 @@ class Reponse(object):
             "data": self.data
         }
 
-        return JsonResponse(response, safe=False)
+        return JsonResponse(response, safe=False, json_dumps_params={'ensure_ascii': False})
 
     def response_success(self, totalCount, data):
         """

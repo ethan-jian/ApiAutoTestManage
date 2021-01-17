@@ -112,5 +112,5 @@ def get_user_info(request, *args, **kwargs):
         return Reponse().response_failed()
     else:
         user_list = Reponse().response_success(total, list(user_list))
-
+    print(user_list)
     return user_list

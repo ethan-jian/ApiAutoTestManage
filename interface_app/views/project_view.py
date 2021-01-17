@@ -6,24 +6,18 @@ from interface_app.libs.reponse import Reponse
 from interface_app.models import Project
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from interface_app.views.base_view import BaseView
 
+
+class ProjectView(BaseView):
+    Model = Project
+    form = ProjectForm
 
 @require_http_methods(['POST'])
 def add_project(request, *args, **kwargs):
-    body = request.body
-    data = json.loads(body, encoding='utf-8')
-    form = ProjectForm(data)
-    if not form.is_valid():
-        Reponse().response_failed()
-    try:
-        service = Project.objects.create(**form.cleaned_data)
-    except IntegrityError:
-        return Reponse().response_failed(message='项目已存在')
-    else:
-        if not service:
-            return Reponse().response_failed()
-        else:
-            return Reponse().response_success(0, None)
+    obj = ProjectView()
+    obj.message = "项目已存在"
+    return obj.add_view(request, *args, **kwargs)
 
 
 @require_http_methods(['POST'])
@@ -35,37 +29,17 @@ def get_project_list_info(request, *args, **kwargs):
     :param kwargs:
     :return:
     """
-    body = request.body
-    data = json.loads(body, encoding='utf-8')
-    kw = data.get('kw', '')
-    current_page = data.get('currentPage', 1)
-    page_size = data.get('pageSize', 10)
-    sort = data.get('sort')
-    prefix = ''
-    if sort[0].get('direct').upper() == 'DESC':
-        prefix = '-'
-    order_field = prefix + sort[0].get('field')
+    obj = ProjectView()
+    obj_list = obj.list_view(request, *args, **kwargs)
+    obj_str = str(list(obj_list)[0], encoding="utf-8")
+    obj_dict = json.loads(obj_str)
 
-    project_set = Project.objects.filter(name__contains=kw).order_by(order_field).values()
-    total_count = len(project_set)
-    paginator = Paginator(project_set, page_size)
-    try:
-        project_set = paginator.page(current_page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        project_set = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        project_set = paginator.page(1)
-
-    project_list = list(project_set.object_list)
-
-
-    for n in project_list:
+    for n in obj_dict['data']:
         n['user_name'] = User.objects.get(id=n['user_id_id']).username
-    project_list = Reponse().response_success(total_count, project_list)
+    obj_list = Reponse().response_success(obj.total_count, obj_dict['data'])
 
-    return project_list
+    return obj_list
+
 
 @require_http_methods(['POST'])
 def cat_project_detail(request, *args, **kwargs):
