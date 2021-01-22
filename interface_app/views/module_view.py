@@ -1,37 +1,38 @@
 from django.views.decorators.http import require_http_methods
-from interface_app.forms.project_form import ProjectForm
-from interface_app.models import Project
+
+from interface_app.forms.module_form import ModuleForm
+from interface_app.models import Module
 from django.contrib.auth.models import User
 from interface_app.views.base_view import BaseView
 
 
-class ProjectView(BaseView):
+class ModuleView(BaseView):
 
-    Model = Project
-    form = ProjectForm
+    Model = Module
+    form = ModuleForm
     add_file = 'username' #接口增加的字段
     filter_file = 'user_id' #通过过滤字段查询
     total_count = 0
 
 
 @require_http_methods(['POST'])
-def add_project(request, *args, **kwargs):
-    obj = ProjectView(request, *args, **kwargs)
+def add_module(request, *args, **kwargs):
+    obj = ModuleView(request, *args, **kwargs)
     obj.message = "已存在"
 
     return obj.add_view(request, *args, **kwargs)
 
 
 @require_http_methods(['POST'])
-def get_project_list_info(request, *args, **kwargs):
+def get_module_list_info(request, *args, **kwargs):
     """
-    获取项目列表
+    获取列表
     :param request:
     :param args:
     :param kwargs:
     :return:
     """
-    obj = ProjectView(request, *args, **kwargs)
+    obj = ModuleView(request, *args, **kwargs)
     obj.list_view(request, *args, **kwargs)
     obj.Model = User
 
@@ -39,15 +40,15 @@ def get_project_list_info(request, *args, **kwargs):
 
 
 @require_http_methods(['POST'])
-def cat_project_detail(request, *args, **kwargs):
+def cat_module_detail(request, *args, **kwargs):
     """
-    查询某个项目信息
+    查询某个信息
     :param request:
     :param args:
     :param kwargs:
     :return:
     """
-    obj = ProjectView(request, *args, **kwargs)
+    obj = ModuleView(request, *args, **kwargs)
     obj.detail_view(request, *args, **kwargs)
     obj.Model = User
 
@@ -55,29 +56,29 @@ def cat_project_detail(request, *args, **kwargs):
 
 
 @require_http_methods(['POST'])
-def edit_project(request, *args, **kwargs):
+def edit_module(request, *args, **kwargs):
     """
-    编辑项目
+    编辑
     :param request:
     :param args:
     :param kwargs:
     :return:
     """
-    obj = ProjectView(request, *args, **kwargs)
+    obj = ModuleView(request, *args, **kwargs)
 
     return obj.edit_view(request, *args, **kwargs)
 
 
 @require_http_methods(['POST'])
-def delete_project(request, *args, **kwargs):
+def delete_module(request, *args, **kwargs):
     """
-    删除项目
+    删除
     :param request:
     :param args:
     :param kwargs:
     :return:
     """
-    obj = ProjectView(request, *args, **kwargs)
+    obj = ModuleView(request, *args, **kwargs)
 
     return obj.delelte_view(request, *args, **kwargs)
 

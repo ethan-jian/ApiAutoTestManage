@@ -1,6 +1,4 @@
 import json
-
-from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import IntegrityError
 from interface_app.libs.reponse import Reponse
@@ -13,7 +11,14 @@ class BaseView(View):
 
     Model = Project
     form = ProjectForm
-    message = "项目已存在"
+    rs_list = [{}, {}]
+    message = "已存在"
+    add_file = 'username' #接口增加的字段
+    filter_file = 'user_id' #通过过滤字段查询
+    total_count = 0
+
+    def __init__(self, request, *args, **kwargs):
+        self.body = json.loads(request.body, encoding='utf-8')
 
     def add_view(self, request, *args, **kwargs):
         """
@@ -23,7 +28,6 @@ class BaseView(View):
         :param kwargs:
         :return:
         """
-        self.body = json.loads(request.body, encoding='utf-8')
         form = self.form(self.body)
         if not form.is_valid():
             Reponse().response_failed()
@@ -45,7 +49,6 @@ class BaseView(View):
         :param kwargs:
         :return:
         """
-        self.body = json.loads(request.body, encoding='utf-8')
         kw = self.body.get('kw', '')
         current_page = self.body.get('currentPage', 1)
         page_size = self.body.get('pageSize', 10)
@@ -67,32 +70,69 @@ class BaseView(View):
             # If page is out of range (e.g. 9999), deliver last page of results.
             obj_set = paginator.page(1)
 
-        obj_list = list(obj_set.object_list)
+        rs_list = list(obj_set.object_list)
 
-        obj_list = Reponse().response_success(self.total_count, obj_list)
+        self.rs_list = Reponse().response_success(self.total_count, rs_list)
 
-        return obj_list
+        return self.rs_list
 
 
-    def edit_view(self):
-        pass
+    def edit_view(self, request, *args, **kwargs):
+        """
+        编辑接口
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        id = self.body.get('id', None)
+        self.body = {key: val for key, val in self.body.items() if key != 'id'}
+        Project.objects.filter(id=id).update(**self.body)
 
-    def delelte_view(self):
-        pass
+        return Reponse().response_success(0, None)
 
-    def detail_view(self):
-        pass
 
-    # def jsonData_to_strData(self, request, *args, **kwargs):
-    #     """
-    #     把返回的json类型的data转换为str类型的data
-    #     :return:
-    #     """
-    #     rs_json = self.list_view(request, *args, **kwargs)
-    #     data_str = str(list(kwargs[''])[0], encoding="utf-8")
-    #     obj_dict = json.loads(obj_str)
-    #
-    #     return data_str
+    def delelte_view(self, request, *args, **kwargs):
+        """
+        删除接口
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        ids = self.body.get('ids')
+        for id in ids:
+            self.Model.objects.filter(id=int(id)).delete()
+
+        return Reponse().response_success(0, None)
+
+
+    def detail_view(self, request, *args, **kwargs):
+        """
+        详情接口
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        id = self.body.get('id', None)
+        self.total_count = 1
+        if id:
+            rs_set = self.Model.objects.filter(id=id).values()
+            self.rs_list = Reponse().response_success(self.total_count, list(rs_set))
+
+        return self.rs_list
+
+
+    def jsonData_to_dictData(self, request, *args, **kwargs):
+        """
+        把返回的json类型的data转换为str类型的data
+        :return:
+        """
+        rs_str = str(list(self.rs_list)[0], encoding="utf-8")
+        rs_dict = json.loads(rs_str)
+
+        return rs_dict
 
 
     def add_file_to_data(self, request, *args, **kwargs):
@@ -103,24 +143,15 @@ class BaseView(View):
         :param kwargs:
         :return:
         """
-        obj_list = self.list_view(request, *args, **kwargs)
-        obj_str = str(list(obj_list)[0], encoding="utf-8")
-        obj_dict = json.loads(obj_str)
-
-        for n in obj_dict['data']:
-            n['username'] = self.Model.objects.get(id=n['user_id']).username
-        obj_list = Reponse().response_success(self.total_count, obj_dict['data'])
-
+        add_file = self.add_file
+        filter_file = self.filter_file
+        rs_dict = self.jsonData_to_dictData(request, *args, **kwargs)
+        for n in rs_dict['data']:
+            str_expression = """n[add_file] = self.Model.objects.get(id=n[filter_file]).%s"""%(add_file)
+            exec(str_expression)
+        obj_list = Reponse().response_success(self.total_count, rs_dict['data'])
 
         return obj_list
-
-
-if __name__ == '__main__':
-    pass
-
-
-
-
 
 
 if __name__ == '__main__':
