@@ -45,7 +45,7 @@ class Project(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     desc = models.CharField('项目描述', max_length=1024)
-    user_id = models.ForeignKey(User, to_field='id', default=1, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, to_field='id', default=1, on_delete=models.DO_NOTHING)
 
 class Module(models.Model):
 

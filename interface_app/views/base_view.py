@@ -83,19 +83,19 @@ class BaseView(View):
     def detail_view(self):
         pass
 
-    def jsonData_to_strData(self, request, *args, **kwargs):
-        """
-        把返回的json类型的data转换为str类型的data
-        :return:
-        """
-        rs_json = self.list_view(request, *args, **kwargs)
-        data_str = str(list(kwargs[''])[0], encoding="utf-8")
-        obj_dict = json.loads(obj_str)
+    # def jsonData_to_strData(self, request, *args, **kwargs):
+    #     """
+    #     把返回的json类型的data转换为str类型的data
+    #     :return:
+    #     """
+    #     rs_json = self.list_view(request, *args, **kwargs)
+    #     data_str = str(list(kwargs[''])[0], encoding="utf-8")
+    #     obj_dict = json.loads(obj_str)
+    #
+    #     return data_str
 
-        return data_str
 
-
-    def add_file(self, request, *args, **kwargs):
+    def add_file_to_data(self, request, *args, **kwargs):
         """
         为返回的data增加字段
         :param request:
@@ -108,8 +108,9 @@ class BaseView(View):
         obj_dict = json.loads(obj_str)
 
         for n in obj_dict['data']:
-            n['user_name'] = User.objects.get(id=n['user_id_id']).username
+            n['username'] = self.Model.objects.get(id=n['user_id']).username
         obj_list = Reponse().response_success(self.total_count, obj_dict['data'])
+
 
         return obj_list
 

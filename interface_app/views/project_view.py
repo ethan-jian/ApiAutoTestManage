@@ -35,7 +35,7 @@ def get_project_list_info(request, *args, **kwargs):
     obj_dict = json.loads(obj_str)
 
     for n in obj_dict['data']:
-        n['user_name'] = User.objects.get(id=n['user_id_id']).username
+        n['username'] = User.objects.get(id=n['user_id']).username
     obj_list = Reponse().response_success(obj.total_count, obj_dict['data'])
 
     return obj_list
