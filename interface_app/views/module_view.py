@@ -1,7 +1,7 @@
 from django.views.decorators.http import require_http_methods
 
 from interface_app.forms.module_form import ModuleForm
-from interface_app.models import Module
+from interface_app.models import Module, Project
 from django.contrib.auth.models import User
 from interface_app.views.base_view import BaseView
 
@@ -10,8 +10,9 @@ class ModuleView(BaseView):
 
     Model = Module
     form = ModuleForm
-    add_file = 'username' #接口增加的字段
-    filter_file = 'user_id' #通过过滤字段查询
+    add_file_k = 'project_name'  # 接口增加的字段名k
+    add_file_v = 'name'  # 接口增加的字段值v
+    filter_file = 'project_id'  # 通过过滤字段查询
     total_count = 0
 
 
@@ -34,7 +35,7 @@ def get_module_list_info(request, *args, **kwargs):
     """
     obj = ModuleView(request, *args, **kwargs)
     obj.list_view(request, *args, **kwargs)
-    obj.Model = User
+    obj.Model = Project
 
     return obj.add_file_to_data(request, *args, **kwargs)
 

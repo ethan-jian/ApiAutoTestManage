@@ -49,9 +49,15 @@ class Project(models.Model):
 
 class Module(models.Model):
 
-    name = models.CharField('项目名称', blank=False, max_length=64, unique=True)
-    porject = models.ForeignKey(Project, to_field='id', default=1, on_delete=models.DO_NOTHING)
+    name = models.CharField('项目名称', blank=False, max_length=64, unique=False)
     desc = models.CharField('项目描述', max_length=1024)
+    created_time = models.DateTimeField(auto_now_add=True)
+    update_time = models.DateTimeField(auto_now=True)
+    project = models.ForeignKey(Project, to_field='id', default=1, on_delete=models.DO_NOTHING)
+
+    class Meta:
+        unique_together = ('name', 'project',)
+
 
 class Api(models.Model):
 

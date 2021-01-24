@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from interface_app.views import project_view, user_view, api_view
+from interface_app.views import project_view, user_view, api_view, module_view
 
 urlpatterns = [
     path(r'api/admin/', admin.site.urls),
@@ -30,6 +30,12 @@ urlpatterns = [
     path(r'api/DetailProject', project_view.cat_project_detail),
     path(r'api/EditProject', project_view.edit_project),
     path(r'api/DeleteProject', project_view.delete_project),
+
+    path(r'api/AddModule', module_view.add_module),
+    path(r'api/ListModule', module_view.get_module_list_info),
+    path(r'api/DetailModule', module_view.cat_module_detail),
+    path(r'api/EditModule', module_view.edit_module),
+    path(r'api/DeleteModule', module_view.delete_module),
 
     path(r'api/AddApi', api_view.add_api),
     path(r'api/ListApi', api_view.get_api_list_info),

@@ -5,6 +5,7 @@ from interface_app.libs.reponse import Reponse
 from interface_app.models import Project
 from interface_app.forms.project_form import ProjectForm
 from django.views.generic import View
+from django.db import connection
 
 
 class BaseView(View):
@@ -13,9 +14,12 @@ class BaseView(View):
     form = ProjectForm
     rs_list = [{}, {}]
     message = "已存在"
-    add_file = 'username' #接口增加的字段
+    add_file_k = 'username' #接口增加的字段名k
+    add_file_v = 'username' #接口增加的字段值v
     filter_file = 'user_id' #通过过滤字段查询
     total_count = 0
+    # kw = ''
+    # order_field = ''
 
     def __init__(self, request, *args, **kwargs):
         self.body = json.loads(request.body, encoding='utf-8')
@@ -57,7 +61,6 @@ class BaseView(View):
         if sort[0].get('direct').upper() == 'DESC':
             prefix = '-'
         order_field = prefix + sort[0].get('field')
-
         obj_set = self.Model.objects.filter(name__contains=kw).order_by(order_field).values()
         self.total_count = len(obj_set)
         paginator = Paginator(obj_set, page_size)
@@ -131,7 +134,7 @@ class BaseView(View):
         """
         rs_str = str(list(self.rs_list)[0], encoding="utf-8")
         rs_dict = json.loads(rs_str)
-
+        print(self.execute_sql())
         return rs_dict
 
 
@@ -143,15 +146,31 @@ class BaseView(View):
         :param kwargs:
         :return:
         """
-        add_file = self.add_file
+        add_file_k = self.add_file_k
+        add_file_v = self.add_file_v
         filter_file = self.filter_file
         rs_dict = self.jsonData_to_dictData(request, *args, **kwargs)
         for n in rs_dict['data']:
-            str_expression = """n[add_file] = self.Model.objects.get(id=n[filter_file]).%s"""%(add_file)
+            str_expression = """n[add_file_k] = self.Model.objects.get(id=n[filter_file]).%s"""%(add_file_v)
             exec(str_expression)
         obj_list = Reponse().response_success(self.total_count, rs_dict['data'])
 
         return obj_list
+
+    def execute_sql(self, sql=""):
+        """
+        执行原生sql
+        :return:
+        """
+
+        cursor = connection.cursor()
+        cursor.execute(
+            "select * from interface_app_module m LEFT JOIN interface_app_project p ON m.project_id=p.id where p.name LIKE '%%'")
+        rs = cursor.fetchall()
+
+        return Reponse().response_success(0, rs)
+
+
 
 
 if __name__ == '__main__':
