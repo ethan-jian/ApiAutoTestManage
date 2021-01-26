@@ -1,7 +1,6 @@
 import json
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import IntegrityError
-
 from interface_app import models
 from interface_app.libs.reponse import Reponse
 from interface_app.models import Project, Module
@@ -55,7 +54,7 @@ class BaseView(Reponse):
         :param kwargs:
         :return:
         """
-        self.test()
+        # self.test()
         current_page = self.body.get('currentPage', 1)
         page_size = self.body.get('pageSize', 10)
         sort = self.body.get('sort')
@@ -63,7 +62,12 @@ class BaseView(Reponse):
         if sort[0].get('direct').upper() == 'DESC':
             prefix = '-'
         self.order_field = prefix + sort[0].get('field')
-        obj_set = self.Model.objects.filter(name__contains=self.kw).order_by(self.order_field).values()
+        # obj_set = self.Model.objects.filter(name__contains=self.kw).order_by(self.order_field).values()
+        obj_set = ""
+        #exec("obj_set = models.Module.objects.filter(project__name__contains=self.kw).values()")
+        obj_set = list(eval("models.Module.objects.filter(project__name__contains=self.kw).values()"))
+        #obj_set = models.Module.objects.filter(project__name__contains=self.kw).values()
+        print('>>>>>', obj_set)
         self.total_count = len(obj_set)
         paginator = Paginator(obj_set, page_size)
         try:
