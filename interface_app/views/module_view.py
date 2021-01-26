@@ -34,10 +34,11 @@ def get_module_list_info(request, *args, **kwargs):
     :return:
     """
     obj = ModuleView(request, *args, **kwargs)
-    obj.list_view(request, *args, **kwargs)
-    obj.Model = Project
+    orm_sql = "models.Module.objects.filter(name__contains=self.kw)." \
+              "extra(select={'%s': 'select name from interface_app_project where id = project_id'})." \
+              "values().order_by(self.order_field)" % obj.add_file_k
 
-    return obj.add_file_to_data(request, *args, **kwargs)
+    return obj.list_view(request, *args, **{"orm_sql": orm_sql})
 
 
 @require_http_methods(['POST'])

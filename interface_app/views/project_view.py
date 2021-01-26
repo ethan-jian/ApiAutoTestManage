@@ -32,10 +32,11 @@ def get_project_list_info(request, *args, **kwargs):
     :return:
     """
     obj = ProjectView(request, *args, **kwargs)
-    obj.list_view(request, *args, **kwargs)
-    obj.Model = User
+    orm_sql = "models.Project.objects.filter(name__contains=self.kw)." \
+              "extra(select={'%s': 'select username from auth_user where id = user_id'})." \
+              "values().order_by(self.order_field)" % obj.add_file_k
 
-    return obj.add_file_to_data(request, *args, **kwargs)
+    return obj.list_view(request, *args, **{"orm_sql": orm_sql})
 
 
 @require_http_methods(['POST'])
