@@ -53,10 +53,10 @@ class BaseView(Reponse):
         :param kwargs:
         :return:
         """
-        # self.test()
+        self.test()
         self.kw = self.body.get('kw')
-        current_page = self.body.get('currentPage', 1)
-        page_size = self.body.get('pageSize', 10)
+        current_page = self.body.get('currentPage', '')
+        page_size = self.body.get('pageSize', '')
         sort = self.body.get('sort')
         prefix = ''
         if sort[0].get('direct').upper() == 'DESC':
@@ -64,19 +64,19 @@ class BaseView(Reponse):
         self.order_field = prefix + sort[0].get('field')
         obj_set = eval(kwargs.get('orm_sql', ''))
         self.total_count = len(obj_set)
-        paginator = Paginator(obj_set, page_size)
-        try:
-            obj_set = paginator.page(current_page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            obj_set = paginator.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            obj_set = paginator.page(1)
+        if current_page and page_size:
+            paginator = Paginator(obj_set, page_size)
+            try:
+                obj_set = paginator.page(current_page)
+            except PageNotAnInteger:
+                # If page is not an integer, deliver first page.
+                obj_set = paginator.page(1)
+            except EmptyPage:
+                # If page is out of range (e.g. 9999), deliver last page of results.
+                obj_set = paginator.page(1)
+            obj_set = obj_set.object_list
 
-        rs_list = list(obj_set.object_list)
-
-        self.rs_list = self.response_success(self.total_count, rs_list)
+        self.rs_list = self.response_success(self.total_count, list(obj_set))
 
         return self.rs_list
 
@@ -91,7 +91,7 @@ class BaseView(Reponse):
         """
         id = self.body.get('id', None)
         self.body = {key: val for key, val in self.body.items() if key != 'id'}
-        Project.objects.filter(id=id).update(**self.body)
+        self.Model.objects.filter(id=id).update(**self.body)
 
         return self.response_success(0, None)
 
@@ -119,11 +119,12 @@ class BaseView(Reponse):
         :param kwargs:
         :return:
         """
+        # self.test()
         id = self.body.get('id', None)
-        self.total_count = 1
         if id:
-            rs_set = self.Model.objects.filter(id=id).values()
-            self.rs_list = self.response_success(self.total_count, list(rs_set))
+            obj_set = eval(kwargs.get('orm_sql', ''))
+            self.total_count = len(obj_set)
+            self.rs_list = self.response_success(self.total_count, list(obj_set))
 
         return self.rs_list
 
@@ -170,8 +171,11 @@ class BaseView(Reponse):
         return rs
 
     def test(self):
-        rs = models.Project.objects.filter(name__contains=self.kw).extra(select={'username': 'select username from auth_user where id = user_id'}).values('user_id').order_by(self.order_field)
+        pass
+
+        rs = models.Api.objects.filter(name__contains='').select={'%s': 'select name from interface_app_project where id = project_id'}.values()
         print(rs)
+
 
 
 if __name__ == '__main__':

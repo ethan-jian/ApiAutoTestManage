@@ -11,7 +11,6 @@ class ModuleView(BaseView):
     Model = Module
     form = ModuleForm
     add_file_k = 'project_name'  # 接口增加的字段名k
-    add_file_v = 'name'  # 接口增加的字段值v
     filter_file = 'project_id'  # 通过过滤字段查询
     total_count = 0
 
@@ -34,7 +33,7 @@ def get_module_list_info(request, *args, **kwargs):
     :return:
     """
     obj = ModuleView(request, *args, **kwargs)
-    orm_sql = "models.Module.objects.filter(name__contains=self.kw)." \
+    orm_sql = "models.Module.objects.filter(project__name__contains=self.kw)." \
               "extra(select={'%s': 'select name from interface_app_project where id = project_id'})." \
               "values().order_by(self.order_field)" % obj.add_file_k
 
@@ -51,10 +50,10 @@ def cat_module_detail(request, *args, **kwargs):
     :return:
     """
     obj = ModuleView(request, *args, **kwargs)
-    obj.detail_view(request, *args, **kwargs)
-    obj.Model = User
+    orm_sql = "models.Module.objects.filter(id=id)" \
+              ".extra(select={'%s': 'select name from interface_app_project where id = project_id'}).values()" % (obj.add_file_k)
 
-    return obj.add_file_to_data(request, *args, **kwargs)
+    return obj.detail_view(request, *args, **{"orm_sql": orm_sql})
 
 
 @require_http_methods(['POST'])

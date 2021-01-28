@@ -65,7 +65,12 @@ class Api(models.Model):
     url = models.CharField('接口地址', blank=False, max_length=64, unique=False)
     desc = models.CharField('接口描述', max_length=1024)
     module = models.ForeignKey(Module, to_field='id', default=1, on_delete=models.DO_NOTHING)
+    created_time = models.DateTimeField(auto_now_add=True)
+    update_time = models.DateTimeField(auto_now=True)
     project = models.ForeignKey(Project, to_field='id', default=1, on_delete=models.DO_NOTHING)
+
+    class Meta:
+        unique_together = ('name', 'module', 'project')
 
 
 #

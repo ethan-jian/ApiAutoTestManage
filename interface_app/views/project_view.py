@@ -38,6 +38,19 @@ def get_project_list_info(request, *args, **kwargs):
 
     return obj.list_view(request, *args, **{"orm_sql": orm_sql})
 
+@require_http_methods(['POST'])
+def get_project_module_list_info(request, *args, **kwargs):
+    """
+    获取项目下模块列表
+    :param request:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    obj = ProjectView(request, *args, **kwargs)
+    orm_sql = "models.Module.objects.filter(project_id=id).values()"
+
+    return obj.detail_view(request, *args, **{"orm_sql": orm_sql})
 
 @require_http_methods(['POST'])
 def cat_project_detail(request, *args, **kwargs):
@@ -49,10 +62,11 @@ def cat_project_detail(request, *args, **kwargs):
     :return:
     """
     obj = ProjectView(request, *args, **kwargs)
-    obj.detail_view(request, *args, **kwargs)
-    obj.Model = User
 
-    return obj.add_file_to_data(request, *args, **kwargs)
+    orm_sql = "models.Project.objects.filter(id=id)" \
+              ".extra(select={'%s': 'select username from auth_user where id = user_id'}).values()" % obj.add_file_k
+
+    return obj.detail_view(request, *args, **{"orm_sql": orm_sql})
 
 
 @require_http_methods(['POST'])
