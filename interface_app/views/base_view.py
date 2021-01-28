@@ -54,6 +54,7 @@ class BaseView(Reponse):
         :return:
         """
         # self.test()
+        self.kw = self.body.get('kw')
         current_page = self.body.get('currentPage', 1)
         page_size = self.body.get('pageSize', 10)
         sort = self.body.get('sort')
