@@ -63,6 +63,8 @@ class Api(models.Model):
 
     name = models.CharField('接口名称', blank=False, max_length=64, unique=True)
     url = models.CharField('接口地址', blank=False, max_length=64, unique=False)
+    method = models.CharField('请求方法', blank=False, max_length=64, unique=False)
+    json_variable = models.CharField('请求json参数', blank=False, max_length=2048, unique=False)
     desc = models.CharField('接口描述', max_length=1024)
     module = models.ForeignKey(Module, to_field='id', default=1, on_delete=models.DO_NOTHING)
     created_time = models.DateTimeField(auto_now_add=True)
