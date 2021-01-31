@@ -60,16 +60,28 @@ class Module(models.Model):
 
 
 class Api(models.Model):
-
-    name = models.CharField('接口名称', blank=False, max_length=64, unique=True)
-    url = models.CharField('接口地址', blank=False, max_length=64, unique=False)
-    method = models.CharField('请求方法', blank=False, max_length=64, unique=False)
-    json_variable = models.CharField('请求json参数', blank=False, max_length=2048, unique=False)
-    desc = models.CharField('接口描述', max_length=1024)
+    num = models.IntegerField('接口序号', blank=True)
+    name = models.CharField('接口名称',  max_length=128, blank=True)
+    desc = models.CharField('接口描述', max_length=256, blank=True)
+    variable_type = models.CharField('参数类型选择', max_length=32, blank=True)
+    status_url = models.CharField('基础url,序号对应项目的环境', max_length=32, blank=True)
+    up_func = models.CharField('接口执行前的函数', max_length=128)
+    down_func = models.CharField('接口执行后的函数', max_length=128)
+    method = models.CharField('请求方式', max_length=32, blank=True)
+    variable = models.TextField('form-data形式的参数')
+    json_variable = models.TextField('json形式的参数')
+    param = models.TextField('url上面所带的参数')
+    url = models.CharField('接口地址', max_length=256, blank=True)
+    skip = models.CharField('跳过判断', max_length=256)
+    extract = models.CharField('提取信息', max_length=2048)
+    validate = models.CharField('断言信息', max_length=2048)
+    header = models.CharField('头部信息', max_length=2048)
     module = models.ForeignKey(Module, to_field='id', default=1, on_delete=models.DO_NOTHING)
+    project = models.ForeignKey(Project, to_field='id', default=1, on_delete=models.DO_NOTHING)
     created_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
-    project = models.ForeignKey(Project, to_field='id', default=1, on_delete=models.DO_NOTHING)
+
+
 
     class Meta:
         unique_together = ('name', 'module', 'project')
