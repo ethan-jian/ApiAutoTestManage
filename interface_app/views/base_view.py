@@ -53,7 +53,7 @@ class BaseView(Reponse):
         :param kwargs:
         :return:
         """
-        self.test()
+        # self.test()
         self.kw = self.body.get('kw')
         current_page = self.body.get('currentPage', '')
         page_size = self.body.get('pageSize', '')
