@@ -34,6 +34,7 @@ class BaseView(Reponse):
         """
         form = self.form(self.body)
         if not form.is_valid():
+            print("ookoko")
             self.response_failed()
         try:
             service = self.Model.objects.create(**form.cleaned_data)
