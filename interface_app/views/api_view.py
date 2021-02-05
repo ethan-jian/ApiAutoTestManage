@@ -33,10 +33,22 @@ def get_api_list_info(request, *args, **kwargs):
     :param kwargs:
     :return:
     """
+
     obj = ApiView(request, *args, **kwargs)
-    orm_sql = "models.Api.objects.filter(project__name__contains=self.kw)." \
-              "extra(select={'%s': 'select name from interface_app_project where id = project_id'})." \
-              "values().order_by(self.order_field)" % obj.add_file_k
+    project_id = obj.body.get('project_id')
+    module_id = obj.body.get('module_id')
+    print(project_id, module_id)
+    if project_id and module_id:
+        filter_expression = "Q(project_id=%s) & Q(module_id=%s)" % (project_id, module_id)
+    elif project_id:
+        filter_expression = "Q(project_id=%s)" % (project_id)
+    elif not project_id and not module_id:
+        filter_expression = "project__name__contains=self.kw"
+
+    orm_sql = "models.Api.objects.filter(%s)." \
+              "extra(select={'project_name': 'select name from interface_app_project where id = project_id'," \
+              "'module_name': 'select name from interface_app_module where id = module_id'})." \
+              "values().order_by(self.order_field)" % filter_expression
 
     return obj.list_view(request, *args, **{"orm_sql": orm_sql})
 

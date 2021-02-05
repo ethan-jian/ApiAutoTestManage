@@ -1,7 +1,7 @@
 import json
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import IntegrityError
-
+from django.db.models import Q
 from interface_app import models
 from interface_app.libs.reponse import Reponse
 from interface_app.models import Project, Module
@@ -54,8 +54,8 @@ class BaseView(Reponse):
         :param kwargs:
         :return:
         """
-        # self.test()
-        self.kw = self.body.get('kw')
+        self.test()
+        self.kw = self.body.get('kw', '')
         current_page = self.body.get('currentPage', '')
         page_size = self.body.get('pageSize', '')
         sort = self.body.get('sort')
@@ -174,8 +174,8 @@ class BaseView(Reponse):
     def test(self):
         pass
 
-        rs = models.Api.objects.filter(name__contains='').select={'%s': 'select name from interface_app_project where id = project_id'}.values()
-        print(rs)
+        # orm_sql = models.Api.objects.filter(Q(project_id=1) & Q(module_id="")).values()
+        # print(orm_sql)
 
 
 
