@@ -25,6 +25,14 @@ def add_api(request, *args, **kwargs):
 
 
 @require_http_methods(['POST'])
+def run_api(request, *args, **kwargs):
+    obj = ApiView(request, *args, **kwargs)
+    obj.message = "已存在"
+
+    return obj.add_view(request, *args, **kwargs)
+
+
+@require_http_methods(['POST'])
 def get_api_list_info(request, *args, **kwargs):
     """
     获取列表
