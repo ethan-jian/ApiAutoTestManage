@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 
 from interface_app.forms.module_form import ModuleForm
@@ -24,6 +25,7 @@ def add_module(request, *args, **kwargs):
 
 
 @require_http_methods(['POST'])
+@login_required
 def get_module_list_info(request, *args, **kwargs):
     """
     获取列表

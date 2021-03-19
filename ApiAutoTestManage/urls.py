@@ -43,5 +43,6 @@ urlpatterns = [
     path(r'api/DetailApi', api_view.cat_api_detail),
     path(r'api/EditApi', api_view.edit_api),
     path(r'api/DeleteApi', api_view.delete_api),
+    path(r'api/RunApi', api_view.run_api),
 
 ]

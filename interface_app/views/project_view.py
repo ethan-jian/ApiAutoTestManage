@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from interface_app.forms.project_form import ProjectForm
 from interface_app.models import Project
@@ -23,6 +24,7 @@ def add_project(request, *args, **kwargs):
 
 
 @require_http_methods(['POST'])
+@login_required
 def get_project_list_info(request, *args, **kwargs):
     """
     获取项目列表
@@ -35,7 +37,7 @@ def get_project_list_info(request, *args, **kwargs):
     orm_sql = "models.Project.objects.filter(name__contains=self.kw)." \
               "extra(select={'%s': 'select username from auth_user where id = user_id'})." \
               "values().order_by(self.order_field)" % obj.add_file_k
-
+    print(request.COOKIES)
     return obj.list_view(request, *args, **{"orm_sql": orm_sql})
 
 @require_http_methods(['POST'])
