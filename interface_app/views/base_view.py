@@ -34,8 +34,9 @@ class BaseView(Reponse):
         """
         form = self.form(self.body)
         if not form.is_valid():
-            print("ookoko")
-            self.response_failed()
+            pass
+        #     print("ookoko")
+        #     self.response_failed()
         try:
             service = self.Model.objects.create(**form.cleaned_data)
         except IntegrityError:
@@ -44,7 +45,7 @@ class BaseView(Reponse):
             if not service:
                 return self.response_failed()
             else:
-                return self.response_success(0, None)
+                return self.response_success(0, {"id": service.id})
 
     def list_view(self, request, *args, **kwargs):
         """
@@ -128,37 +129,6 @@ class BaseView(Reponse):
             self.rs_list = self.response_success(self.total_count, list(obj_set))
 
         return self.rs_list
-
-
-    # def jsonData_to_dictData(self, request, *args, **kwargs):
-    #     """
-    #     把返回的json类型的data转换为str类型的data
-    #     :return:
-    #     """
-    #     rs_str = str(list(self.rs_list)[0], encoding="utf-8")
-    #     rs_dict = json.loads(rs_str)
-    #
-    #     return rs_dict
-
-
-    # def add_file_to_data(self, request, *args, **kwargs):
-    #     """
-    #     为返回的data增加字段
-    #     :param request:
-    #     :param args:
-    #     :param kwargs:
-    #     :return:
-    #     """
-    #     add_file_k = self.add_file_k
-    #     add_file_v = self.add_file_v
-    #     filter_file = self.filter_file
-    #     rs_dict = self.jsonData_to_dictData(request, *args, **kwargs)
-    #     for n in rs_dict['data']:
-    #         str_expression = """n[add_file_k] = self.Model.objects.get(id=n[filter_file]).%s"""%(add_file_v)
-    #         exec(str_expression)
-    #     obj_list = self.response_success(self.total_count, rs_dict['data'])
-    #
-    #     return obj_list
 
     def execute_sql(self, sql=""):
         """

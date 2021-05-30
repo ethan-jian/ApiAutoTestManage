@@ -1,18 +1,26 @@
 import json
 
+from django.db.models import F
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from flask.json import JSONEncoder
 
+from interface_app.libs.reponse import Reponse
+from interface_app import models
 from interface_app.forms.api_form import ApiForm
 from interface_app.forms.module_form import ModuleForm
 from interface_app.models import Api, Project
 from django.contrib.auth.models import User
+
+from interface_app.util.http_run import Run
+from interface_app.util.utils import encode_object
 from interface_app.views.base_view import BaseView
 from interface_app.libs.httprunner.api import HttpRunner
 
-class ApiView(BaseView):
+response = Reponse()
 
+
+class ApiView(BaseView):
     Model = Api
     form = ApiForm
     add_file_k = 'project_name'  # 接口增加的字段名k
@@ -29,19 +37,85 @@ def add_api(request, *args, **kwargs):
     return obj.add_view(request, *args, **kwargs)
 
 
-@require_http_methods(['GET'])
-@login_required
+@require_http_methods(['POST'])
 def run_api(request, *args, **kwargs):
-    # obj = ApiView(request, *args, **kwargs)
-    # obj.message = "已存在"
-    # data = {"testcases": [{"teststeps": [{"name": "登录/Login/login", "request": {"method": "POST", "files": {}, "data": {}, "url": "http://123.56.107.182:21001/Login/login", "params": {}, "headers": {}, "json": {"loginName": "$loginName", "passWord": "$passWord"}}, "extract": [{"token": "content.data"}, {"code1": "content.code"}, {"message1": "content.message"}], "validate": [{"equals": ["status_code", 200]}, {"equals": ["$code1", 200]}, {"equals": ["$message1", "操作成功"]}]}], "config": {"variables": {}}}], "project_mapping": {"functions": {}, "variables": {"loginName": "administrator", "passWord": "123456", "Accept": "application/json, text/plain, */*", "Content-Type": "application/json;charset=UTF-8", "addRobot": "addRobot", "addRobtGroup": "addRobtGroup", "modifyRobot": "modifyRobot", "modifyRobotGroup": "modifyRobotGroup", "addmachineName": "addmachineName", "adddescription": "adddescription", "addsystemLoginName": "addsystemLoginName", "addsystemPassword": "addsystemPassword", "modifysystemPassword": "modifysystemPassword", "modifydescription": "modifydescription", "modifymachineName": "modifymachineName", "modifysystemLoginName": "modifysystemLoginName", "addRobtGroupDescription": "addRobtGroupDescription", "modifyRobtGroupDescription": "modifyRobtGroupDescription", "file_path": r"C:\\Users\\ethan\\Desktop\\上传\\参数测试1030.nupkg", "filename": "参数测试1030.nupkg"}}}
-    data = {'testcases': [{'teststeps': [{'name': '获取token/connect/token', 'request': {'method': 'POST', 'files': {}, 'data': {'client_id': 'wpfclient', 'client_secret': '49C1A7E1-0C79-4A89-A3D6-A37998FB86B0', 'grant_type': 'password', 'username': '13723418945', 'password': 'as123456'}, 'url': 'http://123.56.107.182:12001/connect/token', 'params': {}, 'headers': {}}, 'extract': [], 'validate': []}], 'config': {'variables': {}}}], 'project_mapping': {'functions': {}, 'variables': {'username': '13723418945', 'password': 'as123456', 'Accept': 'application/json, text/plain, */*', 'Content-Type': 'application/json;charset=UTF-8'}}}
-    obj = HttpRunner()
-    obj.run(data)
-    jump_res = json.dumps(obj._summary, ensure_ascii=False, cls=JSONEncoder)
-    print(jump_res)
+    """
+    跑单个接口
+    :param request:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    body = json.loads(request.body, encoding='utf-8')
+    api_id = body['apiId']
+    api_data = models.Api.objects.filter(id=api_id).values("name",
+                                                           "base_url",
+                                                           "up_func",
+                                                           "body_form_data",
+                                                           "body_json",
+                                                           "method",
+                                                           "url_param",
+                                                           "url",
+                                                           "skip",
+                                                           "extract",
+                                                           "validate",
+                                                           "header",
+                                                           "project__variables")
+    api_data = list(api_data)[0]
+    variables = {n['key']: n['value'] for n in json.loads(api_data['project__variables'])}
+    test_data = {
+        "testcases": [
+            {
+                "teststeps": [
+                    {
+                        "name": api_data['name'],
+                        "request": {
+                            "method": api_data['method'],
+                            "files": {
 
-    return jump_res
+                            },
+                            "data": {
+
+                            },
+                            "url": api_data['base_url'] + api_data['url'],
+                            "params": {
+
+                            },
+                            "headers": {
+
+                            },
+                            "json": json.loads(api_data['body_json'])
+
+                        },
+                        "extract": api_data['extract'],
+
+                        "validate": api_data['validate'],
+                    }
+                ],
+                "config": {
+                    "variables": {
+
+                    }
+                }
+            }
+        ],
+        "project_mapping": {
+            "functions": {
+            },
+
+            "variables": variables
+        }
+    }
+
+    runner = HttpRunner()
+
+    runner.run(test_data)
+    jump_res = json.dumps(runner._summary, ensure_ascii=False, default=encode_object, cls=JSONEncoder)
+    print(jump_res)
+    # return jump_res
+
+
+    return response.response_success(totalCount=1, data=jump_res)
 
 
 @require_http_methods(['POST'])
@@ -85,7 +159,8 @@ def cat_api_detail(request, *args, **kwargs):
     """
     obj = ApiView(request, *args, **kwargs)
     orm_sql = "models.Api.objects.filter(id=id)" \
-              ".extra(select={'%s': 'select name from interface_app_project where id = project_id'}).values()" % (obj.add_file_k)
+              ".extra(select={'%s': 'select name from interface_app_project where id = project_id'}).values()" % (
+                  obj.add_file_k)
 
     return obj.detail_view(request, *args, **{"orm_sql": orm_sql})
 
@@ -116,4 +191,3 @@ def delete_api(request, *args, **kwargs):
     obj = ApiView(request, *args, **kwargs)
 
     return obj.delelte_view(request, *args, **kwargs)
-

@@ -1,35 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-#
-#
-# # class Publish(models.Model):
-# #     name = models.CharField(max_length=64)
-# #     city = models.CharField(max_length=63, null=True)
-# #
-# #     def __str__(self):
-# #         return self.name
-# #
-# #
-# # class Author(models.Model):
-# #     name = models.CharField(max_length=30)
-# #     sex = models.CharField(max_length=20)
-# #
-# #     def __str__(self):
-# #         return self.name
-# #
-# #
-# # class Book(models.Model):
-# #     title = models.CharField(max_length=64)
-# #     price = models.IntegerField()
-# #     color = models.CharField(max_length=64)
-# #     page_num = models.IntegerField(null=True)
-# #     publisher = models.ForeignKey("Publish", on_delete=models.CASCADE,
-# #                                   null=True)  # 一对多的关系。2.0django中，当有主外键和其他对应关系时，需要设置。
-# #     author = models.ManyToManyField("Author")
-# #
-# #     def __str__(self):
-# #         return self.title
-#
+
+
 class Project(models.Model):
 
     name = models.CharField('项目名称', blank=False, max_length=64, unique=True)
