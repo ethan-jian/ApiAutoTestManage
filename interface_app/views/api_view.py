@@ -49,7 +49,7 @@ def run_api(request, *args, **kwargs):
     body = json.loads(request.body, encoding='utf-8')
     name = body['name']
     base_url = body['baseUrl']
-    up_func = body['upGunc']
+    up_func = body['upFunc']
     body_form_data = body['upFunc']
     body_json = body['bodyJson']
     method = body['method']
@@ -61,9 +61,9 @@ def run_api(request, *args, **kwargs):
     header = body['header']
     down_func = body['downFunc']
     project_id = body['projectId']
-    api_data = models.Project.objects.filter(id=project_id).values("variables")
-    api_data = list(api_data)[0]
-    variables = {n['key']: n['value'] for n in json.loads(api_data['project__variables'])}
+    variables = models.Project.objects.filter(id=project_id).values("variables")
+    variables = list(variables)[0]['variables']
+    variables = {n['key']: n['value'] for n in json.loads(variables)}
     test_data = {
         "testcases": [
             {
@@ -113,10 +113,11 @@ def run_api(request, *args, **kwargs):
     runner.run(test_data)
     jump_res = json.dumps(runner._summary, ensure_ascii=False, default=encode_object, cls=JSONEncoder)
     print(jump_res)
-    return jump_res
+    print(type(jump_res))
+    #return jump_res
 
 
-    return response.response_success(totalCount=1, data=api_data)
+    return response.response_success(totalCount=1, data=json.loads(jump_res))
 
 
 @require_http_methods(['POST'])
