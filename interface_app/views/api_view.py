@@ -47,20 +47,21 @@ def run_api(request, *args, **kwargs):
     :return:
     """
     body = json.loads(request.body, encoding='utf-8')
-    api_id = body['apiId']
-    api_data = models.Api.objects.filter(id=api_id).values("name",
-                                                           "base_url",
-                                                           "up_func",
-                                                           "body_form_data",
-                                                           "body_json",
-                                                           "method",
-                                                           "url_param",
-                                                           "url",
-                                                           "skip",
-                                                           "extract",
-                                                           "validate",
-                                                           "header",
-                                                           "project__variables")
+    name = body['name']
+    base_url = body['baseUrl']
+    up_func = body['upGunc']
+    body_form_data = body['upFunc']
+    body_json = body['bodyJson']
+    method = body['method']
+    url_param = body['urlParam']
+    url = body['url']
+    skip = body['skip']
+    extract = body['extract']
+    validate = body['validate']
+    header = body['header']
+    down_func = body['downFunc']
+    project_id = body['projectId']
+    api_data = models.Project.objects.filter(id=project_id).values("variables")
     api_data = list(api_data)[0]
     variables = {n['key']: n['value'] for n in json.loads(api_data['project__variables'])}
     test_data = {
@@ -68,28 +69,28 @@ def run_api(request, *args, **kwargs):
             {
                 "teststeps": [
                     {
-                        "name": api_data['name'],
+                        "name": name,
                         "request": {
-                            "method": api_data['method'],
+                            "method": method,
                             "files": {
 
                             },
                             "data": {
 
                             },
-                            "url": api_data['base_url'] + api_data['url'],
+                            "url": base_url + url,
                             "params": {
 
                             },
                             "headers": {
 
                             },
-                            "json": json.loads(api_data['body_json'])
+                            "json": json.loads(body_json)
 
                         },
-                        "extract": api_data['extract'],
+                        "extract": extract,
 
-                        "validate": api_data['validate'],
+                        "validate": validate,
                     }
                 ],
                 "config": {
@@ -112,10 +113,10 @@ def run_api(request, *args, **kwargs):
     runner.run(test_data)
     jump_res = json.dumps(runner._summary, ensure_ascii=False, default=encode_object, cls=JSONEncoder)
     print(jump_res)
-    # return jump_res
+    return jump_res
 
 
-    return response.response_success(totalCount=1, data=jump_res)
+    return response.response_success(totalCount=1, data=api_data)
 
 
 @require_http_methods(['POST'])
