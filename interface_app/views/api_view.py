@@ -31,7 +31,11 @@ class ApiView(BaseView):
 @require_http_methods(['POST'])
 @login_required
 def add_api(request, *args, **kwargs):
+
     obj = ApiView(request, *args, **kwargs)
+    project_id = obj.body.get('project_id')
+    module_id = obj.body.get('module_id')
+
     obj.message = "已存在"
 
     return obj.add_view(request, *args, **kwargs)
@@ -56,8 +60,14 @@ def run_api(request, *args, **kwargs):
     url_param = body['urlParam']
     url = body['url']
     skip = body['skip']
-    extract = body['extract']
-    validate = body['validate']
+    extract = [{n['key']: n['value'] for n in body['extract'] if n['key'] != None or n['value'] != None}]
+    # [{key: "content.code", value: "200", remark: null, validateType: "equals"}]
+    # [{'equals': ['content.code', 200]}]
+    validate = [{n['validateType']: [n['key'], json.loads(n['value'])] for n in body['validate'] if n['key'] != None or n['value'] != None}]
+    print("校验")
+    if validate[0] == {}:
+        validate = []
+    print(validate)
     header = body['header']
     down_func = body['downFunc']
     project_id = body['projectId']
