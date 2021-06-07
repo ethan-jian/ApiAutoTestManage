@@ -19,16 +19,17 @@ class Project(models.Model):
     desc = models.CharField('项目描述', max_length=1024)
     user = models.ForeignKey(User, to_field='id', default=1, on_delete=models.DO_NOTHING)
 
+
 class Module(models.Model):
 
     name = models.CharField('项目名称', blank=False, max_length=64, unique=False)
     desc = models.CharField('项目描述', max_length=1024)
     created_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
-    project = models.ForeignKey(Project, to_field='id', default=1, on_delete=models.DO_NOTHING)
+    project = models.ForeignKey(Project, to_field='id', default=1, related_name='project_diff1', on_delete=models.DO_NOTHING)
 
     class Meta:
-        unique_together = ('name', 'project',)
+        unique_together = ('name', 'project')
 
 
 class Api(models.Model):
@@ -50,46 +51,35 @@ class Api(models.Model):
     validate = models.CharField('断言信息', max_length=2048)
     header = models.CharField('头部信息', max_length=2048)
     module = models.ForeignKey(Module, to_field='id', default=1, on_delete=models.DO_NOTHING)
-    project = models.ForeignKey(Project, to_field='id', default=1, on_delete=models.DO_NOTHING)
+    project = models.ForeignKey(Project, to_field='id', default=1, related_name='project_diff2', on_delete=models.DO_NOTHING)
     created_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
-
-
 
     class Meta:
         unique_together = ('name', 'module', 'project')
 
 
-#
-# #
-# # class Module(models):
-# #     name = models.CharField('接口模块', max_length=64, blank=True)
-# #     num = models.IntegerField('模块序号', blank=True)
-# #     project_id = models.ForeignKey('Project', related_name='id', on_delete=models.CASCADE())
-# #     api_msg = db.relationship('ApiMsg', order_by='ApiMsg.num.asc()', lazy='dynamic')
-# #     created_time = db.Column(db.DateTime, index=True, default=datetime.now, comment='创建时间')
-# #     update_time = db.Column(db.DateTime, index=True, default=datetime.now, onupdate=datetime.now)
-# #
-# #
-# # class Config(models):
-# #     id = db.Column(db.Integer(), primary_key=True, comment='主键，自增')
-# #     num = db.Column(db.Integer(), nullable=True, comment='配置序号')
-# #     name = db.Column(db.String(128), comment='配置名称')
-# #     variables = db.Column(db.String(21000), comment='配置参数')
-# #     func_address = db.Column(db.String(128), comment='配置函数')
-# #     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), comment='所属的项目id')
-# #     created_time = db.Column(db.DateTime, index=True, default=datetime.now, comment='创建时间')
-# #     update_time = db.Column(db.DateTime, index=True, default=datetime.now, onupdate=datetime.now)
-# #
-# #
-# # class CaseSet(models):
-# #     id = db.Column(db.Integer(), primary_key=True, comment='主键，自增')
-# #     num = db.Column(db.Integer(), nullable=True, comment='用例集合序号')
-# #     name = db.Column(db.String(256), nullable=True, comment='用例集名称')
-# #     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), comment='所属的项目id')
-# #     cases = db.relationship('Case', order_by='Case.num.asc()', lazy='dynamic')
-# #     created_time = db.Column(db.DateTime, index=True, default=datetime.now, comment='创建时间')
-# #     update_time = db.Column(db.DateTime, index=True, default=datetime.now, onupdate=datetime.now)
-# #
-# #
-#
+class CaseSet(models.Model):
+
+    name = models.CharField('用例集名称', blank=False, max_length=64, unique=False)
+    desc = models.CharField('用例集描述', max_length=1024)
+    created_time = models.DateTimeField(auto_now_add=True)
+    update_time = models.DateTimeField(auto_now=True)
+    project = models.ForeignKey(Project, to_field='id', default=1, related_name='project_diff3', on_delete=models.DO_NOTHING)
+
+    class Meta:
+        unique_together = ('name', 'project')
+
+
+class Case(models.Model):
+
+    name = models.CharField('用例名称',  max_length=128, blank=False)
+    desc = models.CharField('用例描述', max_length=256, blank=True)
+    project = models.ForeignKey(Project, to_field='id', default=1, related_name='project_diff4', on_delete=models.DO_NOTHING)
+    case_set = models.ForeignKey(CaseSet, to_field='id', default=1, on_delete=models.DO_NOTHING)
+    created_time = models.DateTimeField(auto_now_add=True)
+    update_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('name', 'case_set', 'project')
+
