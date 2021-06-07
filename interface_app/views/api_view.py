@@ -31,7 +31,6 @@ class ApiView(BaseView):
 @require_http_methods(['POST'])
 @login_required
 def add_api(request, *args, **kwargs):
-
     obj = ApiView(request, *args, **kwargs)
     project_id = obj.body.get('project_id')
     module_id = obj.body.get('module_id')
@@ -63,7 +62,8 @@ def run_api(request, *args, **kwargs):
     extract = [{n['key']: n['value'] for n in body['extract'] if n['key'] != None or n['value'] != None}]
     # [{key: "content.code", value: "200", remark: null, validateType: "equals"}]
     # [{'equals': ['content.code', 200]}]
-    validate = [{n['validateType']: [n['key'], json.loads(n['value'])] for n in body['validate'] if n['key'] != None or n['value'] != None}]
+    validate = [{n['validateType']: [n['key'], json.loads(n['value'])] for n in body['validate'] if
+                 n['key'] != None or n['value'] != None}]
     print("校验")
     if validate[0] == {}:
         validate = []
@@ -74,6 +74,7 @@ def run_api(request, *args, **kwargs):
     variables = models.Project.objects.filter(id=project_id).values("variables")
     variables = list(variables)[0]['variables']
     variables = {n['key']: n['value'] for n in json.loads(variables)}
+    ## 接口调试
     test_data = {
         "testcases": [
             {
@@ -118,14 +119,60 @@ def run_api(request, *args, **kwargs):
         }
     }
 
+    ## 接口用列
+    test_data = {
+        "testcases": [
+            {
+                "teststeps": [
+                    {
+                        "name": name,
+                        "request": {
+                            "method": method,
+                            "files": {
+
+                            },
+                            "data": {
+
+                            },
+                            "url": base_url + url,
+                            "params": {
+
+                            },
+                            "headers": {
+
+                            },
+                            "json": json.loads(body_json),
+                        },
+                        "times": 1,
+                        "extract": extract,
+                        "validate": validate
+                    }
+                ],
+                "config": {
+                    "variables": {
+
+                    },
+                    "name": case_name,
+                    "functions": {
+                    }
+                }
+            }
+        ],
+        "project_mapping": {
+            "functions": {
+
+            },
+            "variables": variables
+        }
+    }
+
     runner = HttpRunner()
 
     runner.run(test_data)
     jump_res = json.dumps(runner._summary, ensure_ascii=False, default=encode_object, cls=JSONEncoder)
     print(jump_res)
     print(type(jump_res))
-    #return jump_res
-
+    # return jump_res
 
     return response.response_success(totalCount=1, data=json.loads(jump_res))
 
