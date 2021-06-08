@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from interface_app.views import project_view, user_view, api_view, module_view
+from interface_app.views import project_view, user_view, api_view, module_view, caseSet_view
 
 urlpatterns = [
     path(r'api/admin/', admin.site.urls),
@@ -44,5 +44,11 @@ urlpatterns = [
     path(r'api/EditApi', api_view.edit_api),
     path(r'api/DeleteApi', api_view.delete_api),
     path(r'api/RunApi', api_view.run_api),
+
+    path(r'api/AddCaseSet', caseSet_view.add_case_set),
+    path(r'api/ListCaseSet', caseSet_view.get_case_set_info),
+    path(r'api/DetailCaseSet', caseSet_view.cat_case_set_detail),
+    path(r'api/EditCaseSet', caseSet_view.edit_case_set),
+    path(r'api/DeleteCaseSet', caseSet_view.delete_case_set),
 
 ]
