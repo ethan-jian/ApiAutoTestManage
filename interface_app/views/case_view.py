@@ -33,7 +33,7 @@ def get_case_info(request, *args, **kwargs):
     :return:
     """
     obj = CaseView(request, *args, **kwargs)
-    orm_sql = "models.CaseSet.objects.filter(project__name__contains=self.kw)." \
+    orm_sql = "models.Case.objects.filter(project__name__contains=self.kw)." \
               "extra(select={'%s': 'select name from interface_app_project where id = project_id'})." \
               "values().order_by(self.order_field)" % obj.add_file_k
 
@@ -50,7 +50,7 @@ def cat_case_detail(request, *args, **kwargs):
     :return:
     """
     obj = CaseView(request, *args, **kwargs)
-    orm_sql = "models.CaseSet.objects.filter(id=id)" \
+    orm_sql = "models.Case.objects.filter(id=id)" \
               ".extra(select={'%s': 'select name from interface_app_project where id = project_id'}).values()" % (obj.add_file_k)
 
     return obj.detail_view(request, *args, **{"orm_sql": orm_sql})
