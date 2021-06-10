@@ -65,7 +65,7 @@ class BaseView(Reponse):
             prefix = '-'
         self.order_field = prefix + sort[0].get('field')
         obj_set = eval(kwargs.get('orm_sql', ''))
-        self.total_count = len(obj_set)
+
         if current_page and page_size:
             paginator = Paginator(obj_set, page_size)
             try:
@@ -77,8 +77,9 @@ class BaseView(Reponse):
                 # If page is out of range (e.g. 9999), deliver last page of results.
                 obj_set = paginator.page(1)
             obj_set = obj_set.object_list
-
+        self.total_count = len(obj_set)
         self.rs_list = self.response_success(self.total_count, list(obj_set))
+        print(self.rs_list)
 
         return self.rs_list
 
@@ -143,7 +144,8 @@ class BaseView(Reponse):
 
     def test(self):
         pass
-
+        # rs = models.Case.objects.filter(project_id=1).filter(case_set_id=1).values().order_by(self.order_field)
+        # print(rs)
         # orm_sql = models.Api.objects.filter(Q(project_id=1) & Q(module_id="")).values()
         # print(orm_sql)
 
@@ -151,3 +153,4 @@ class BaseView(Reponse):
 
 if __name__ == '__main__':
     pass
+
