@@ -5,7 +5,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators.http import require_http_methods
 from interface_app import models
 from interface_app.forms.case_form import CaseForm
-from interface_app.models import Case
+from interface_app.models import Case, CaseData
 from interface_app.views.base_view import BaseView
 from interface_app.libs.reponse import Reponse
 
@@ -27,6 +27,17 @@ def add_case(request, *args, **kwargs):
 
     return obj.add_view(request, *args, **kwargs)
 
+
+@require_http_methods(['POST'])
+@login_required
+def add_case_data(request, *args, **kwargs):
+    obj = CaseView(request, *args, **kwargs)
+
+    obj.message = "已存在"
+    obj.Model = CaseData
+    obj.form = CaseForm
+
+    return obj.add_view(request, *args, **kwargs)
 
 
 @require_http_methods(['POST'])
