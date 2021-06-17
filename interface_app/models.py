@@ -102,8 +102,8 @@ class CaseData(models.Model):
     extract = models.CharField('提取信息', max_length=2048)
     validate = models.CharField('断言信息', max_length=2048)
     header = models.CharField('头部信息', max_length=2048)
-    case = models.ForeignKey(Case, to_field='id', default=1, on_delete=models.DO_NOTHING)
-    api = models.ForeignKey(Api, to_field='id', default=1, on_delete=models.DO_NOTHING)
+    case = models.ForeignKey(Case, to_field='id', default=1, on_delete=models.DO_NOTHING, db_constraint=False)
+    api = models.ForeignKey(Api, to_field='id', default=1, on_delete=models.DO_NOTHING, db_constraint=False)
     created_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
 

@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators.http import require_http_methods
 from interface_app import models
+from interface_app.forms.case_data_form import CaseDataForm
 from interface_app.forms.case_form import CaseForm
 from interface_app.models import Case, CaseData
 from interface_app.views.base_view import BaseView
@@ -29,15 +30,15 @@ def add_case(request, *args, **kwargs):
 
 
 @require_http_methods(['POST'])
-@login_required
 def add_case_data(request, *args, **kwargs):
-    obj = CaseView(request, *args, **kwargs)
+    bodys = json.loads(request.body, encoding='utf-8')
+    case_data_list = []
+    for body in bodys:
+        case_data_list.append(CaseData(**body))
+    CaseData.objects.bulk_create(case_data_list)
+    totalCount = len(case_data_list)
 
-    obj.message = "已存在"
-    obj.Model = CaseData
-    obj.form = CaseForm
-
-    return obj.add_view(request, *args, **kwargs)
+    return Reponse().response_success(totalCount, data=None)
 
 
 @require_http_methods(['POST'])
