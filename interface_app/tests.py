@@ -1,10 +1,4 @@
-from django.test import TestCase
-
-# Create your tests here.
+di = {'api_id_list': [174, 175], 'case_id': '2'}
 
 
-
-
-exec("""rs=1+2""")
-
-print(rs)
+print(di.get('api_id_list'))
