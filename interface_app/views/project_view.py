@@ -55,6 +55,20 @@ def get_project_module_list_info(request, *args, **kwargs):
     return obj.detail_view(request, *args, **{"orm_sql": orm_sql})
 
 @require_http_methods(['POST'])
+def get_project_caseSet_list_info(request, *args, **kwargs):
+    """
+    获取项目下用例集列表
+    :param request:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    obj = ProjectView(request, *args, **kwargs)
+    orm_sql = "models.CaseSet.objects.filter(project_id=id).values()"
+
+    return obj.detail_view(request, *args, **{"orm_sql": orm_sql})
+
+@require_http_methods(['POST'])
 def cat_project_detail(request, *args, **kwargs):
     """
     查询某个项目信息

@@ -31,6 +31,7 @@ urlpatterns = [
     path(r'api/EditProject', project_view.edit_project),
     path(r'api/DeleteProject', project_view.delete_project),
     path(r'api/ProjectModule', project_view.get_project_module_list_info),
+    path(r'api/ProjectCaseSet', project_view.get_project_caseSet_list_info),
 
     path(r'api/AddModule', module_view.add_module),
     path(r'api/ListModule', module_view.get_module_list_info),
