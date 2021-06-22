@@ -76,7 +76,7 @@ class Case(models.Model):
     name = models.CharField('用例名称',  max_length=128, blank=False)
     desc = models.CharField('用例描述', max_length=256, blank=True)
     project = models.ForeignKey(Project, to_field='id', default=1, related_name='project_diff4', on_delete=models.DO_NOTHING)
-    case_set = models.ForeignKey(CaseSet, to_field='id', default=1, on_delete=models.DO_NOTHING)
+    case_set = models.ForeignKey(CaseSet, to_field='id', default=1, on_delete=models.DO_NOTHING, db_constraint=False)
     created_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
 
