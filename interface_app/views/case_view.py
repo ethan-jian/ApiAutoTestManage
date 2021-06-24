@@ -43,7 +43,7 @@ def add_case_step(request, *args, **kwargs):
                                                               )
         api_list = list(api_set)
         api_list[0]["api_id"] = api_list[0].pop("id")
-        api_list[0]["case_id"] = case_id
+        #api_list[0]["case_id"] = case_id
         case_step_list = case_step_list + api_list
 
     case_steps = []
