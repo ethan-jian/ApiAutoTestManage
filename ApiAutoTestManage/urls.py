@@ -59,5 +59,7 @@ urlpatterns = [
     path(r'api/DeleteCase', case_view.delete_case),
 
     path(r'api/AddCaseStep', case_view.add_case_step),
+    path(r'api/ListCaseStep', case_view.get_case_step_info),
+    path(r'api/DeleteCaseStep', case_view.delete_case_step),
 
 ]

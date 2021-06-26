@@ -6,7 +6,7 @@ from django.views.decorators.http import require_http_methods
 from interface_app import models
 from interface_app.forms.case_data_form import CaseDataForm
 from interface_app.forms.case_form import CaseForm
-from interface_app.models import Case, CaseData, Api
+from interface_app.models import Case, CaseStepData, Api
 from interface_app.views.base_view import BaseView
 from interface_app.libs.reponse import Reponse
 from django.http import JsonResponse
@@ -43,13 +43,13 @@ def add_case_step(request, *args, **kwargs):
                                                               )
         api_list = list(api_set)
         api_list[0]["api_id"] = api_list[0].pop("id")
-        #api_list[0]["case_id"] = case_id
+        api_list[0]["case_id"] = case_id
         case_step_list = case_step_list + api_list
 
     case_steps = []
     for case_step in case_step_list:
-        case_steps.append(CaseData(**case_step))
-    CaseData.objects.bulk_create(case_steps)
+        case_steps.append(CaseStepData(**case_step))
+    CaseStepData.objects.bulk_create(case_steps)
     totalCount = len(case_steps)
 
     return Reponse().response_success(totalCount, data=None)
@@ -96,6 +96,23 @@ def get_case_info(request, *args, **kwargs):
 
 
 @require_http_methods(['POST'])
+def get_case_step_info(request, *args, **kwargs):
+    """
+    获取列表
+    :param request:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    obj = CaseView(request, *args, **kwargs)
+    obj.Model = CaseStepData
+    orm_sql = "models.CaseStepData.objects.filter(case_id=self.kw).values().order_by(self.order_field)"
+
+    return obj.list_view(request, *args, **{"orm_sql": orm_sql})
+
+
+
+@require_http_methods(['POST'])
 def cat_case_detail(request, *args, **kwargs):
     """
     查询某个信息
@@ -136,5 +153,20 @@ def delete_case(request, *args, **kwargs):
     :return:
     """
     obj = CaseView(request, *args, **kwargs)
+
+    return obj.delelte_view(request, *args, **kwargs)
+
+
+@require_http_methods(['POST'])
+def delete_case_step(request, *args, **kwargs):
+    """
+    删除
+    :param request:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    obj = CaseView(request, *args, **kwargs)
+    obj.Model = CaseStepData
 
     return obj.delelte_view(request, *args, **kwargs)
