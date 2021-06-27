@@ -130,6 +130,22 @@ def cat_case_detail(request, *args, **kwargs):
 
 
 @require_http_methods(['POST'])
+def cat_case_step_detail(request, *args, **kwargs):
+    """
+    查询某个信息
+    :param request:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    obj = CaseView(request, *args, **kwargs)
+    obj.Model = CaseStepData
+    orm_sql = "models.CaseStepData.objects.filter(id=id).values()"
+
+    return obj.detail_view(request, *args, **{"orm_sql": orm_sql})
+
+
+@require_http_methods(['POST'])
 def edit_case(request, *args, **kwargs):
     """
     编辑
@@ -141,6 +157,22 @@ def edit_case(request, *args, **kwargs):
     obj = CaseView(request, *args, **kwargs)
 
     return obj.edit_view(request, *args, **kwargs)
+
+
+@require_http_methods(['POST'])
+def edit_case_step_info(request, *args, **kwargs):
+    """
+    编辑
+    :param request:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    obj = CaseView(request, *args, **kwargs)
+    obj.Model = CaseStepData
+
+    return obj.edit_view(request, *args, **kwargs)
+
 
 
 @require_http_methods(['POST'])
