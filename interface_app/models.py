@@ -73,6 +73,7 @@ class CaseSet(models.Model):
 
 class Case(models.Model):
 
+    num = models.IntegerField('用例序号', default=1, blank=True)
     name = models.CharField('用例名称',  max_length=128, blank=False)
     desc = models.CharField('用例描述', max_length=256, blank=True)
     project = models.ForeignKey(Project, to_field='id', default=1, related_name='project_diff4', on_delete=models.DO_NOTHING)
@@ -86,7 +87,7 @@ class Case(models.Model):
 
 class CaseStepData(models.Model):
 
-    # num = models.IntegerField('接口序号', blank=True)
+    num = models.IntegerField('接口序号', default=1, blank=True)
     name = models.CharField('接口名称',  max_length=128, blank=False)
     desc = models.CharField('接口描述', max_length=256, blank=True)
     body_type = models.CharField('参数类型选择', max_length=32, blank=True)
