@@ -174,6 +174,22 @@ def edit_case_step_info(request, *args, **kwargs):
     return obj.edit_view(request, *args, **kwargs)
 
 
+@require_http_methods(['POST'])
+def bulk_edit_case_step_info(request, *args, **kwargs):
+    """
+    批量编辑
+    :param request:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    obj = CaseView(request, *args, **kwargs)
+    obj.Model = CaseStepData
+
+    return obj.edit_view(request, *args, **kwargs)
+
+
+
 
 @require_http_methods(['POST'])
 def delete_case(request, *args, **kwargs):
