@@ -63,6 +63,6 @@ urlpatterns = [
     path(r'api/DeleteCaseStep', case_view.delete_case_step),
     path(r'api/DetailCaseStep', case_view.cat_case_step_detail),
     path(r'api/EditCaseStep', case_view.edit_case_step_info),
-
+    path(r'api/BulkEditCaseStep', case_view.bulk_edit_case_step_info),
 
 ]

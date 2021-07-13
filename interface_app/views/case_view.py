@@ -183,12 +183,13 @@ def bulk_edit_case_step_info(request, *args, **kwargs):
     :param kwargs:
     :return:
     """
-    obj = CaseView(request, *args, **kwargs)
-    obj.Model = CaseStepData
+    body = json.loads(request.body, encoding='utf-8')
+    editDatas = body.get('editDatas', None)
+    for data in editDatas:
+        body = {key: val for key, val in data.items() if key != 'id'}
+        CaseStepData.objects.filter(id=data['id']).update(**body)
 
-    return obj.edit_view(request, *args, **kwargs)
-
-
+    return Reponse().response_success(0, None)
 
 
 @require_http_methods(['POST'])
