@@ -135,19 +135,22 @@ class BaseView(Reponse):
         return self.rs_list
 
 
-    def api_upload(self):
+    def api_upload(self, request, *args, **kwargs):
         """
         上传文件接口
         """
         data = request.files
         file = data['file']
-        skip = request.form.get('skip')
-        if os.path.exists(os.path.join(file_path, file.filename)) and not skip:
-            return jsonify({"msg": "文件已存在，请修改文件名字后再上传", "status": 0})
+        if os.path.exists(os.path.join(file_path, file.filename)):
+            self.message = "文件已存在，请修改文件名字后再上传"
+
+            return self.response_success(0, None)
 
         else:
             file.save(os.path.join(file_path, file.filename))
-            return jsonify({'data': os.path.join(file_path, file.filename), "msg": "上传成功", "status": 1})
+            self.message = "上传成功"
+
+            return self.response_success(0, os.path.join(file_path, file.filename))
 
 
     def execute_sql(self, sql=""):

@@ -250,3 +250,19 @@ def delete_api(request, *args, **kwargs):
     obj = ApiView(request, *args, **kwargs)
 
     return obj.delelte_view(request, *args, **kwargs)
+
+
+@require_http_methods(['POST'])
+def api_upload_api(request, *args, **kwargs):
+    """
+    删除
+    :param request:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    obj = ApiView(request, *args, **kwargs)
+
+    return obj.api_upload(request, *args, **kwargs)
+
+
