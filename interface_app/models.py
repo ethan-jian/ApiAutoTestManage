@@ -87,7 +87,7 @@ class Case(models.Model):
 
 class CaseStepData(models.Model):
 
-    num = models.IntegerField('接口序号', default=1, blank=True)
+    num = models.IntegerField('接口序号', default=1000000000, blank=True)
     name = models.CharField('接口名称',  max_length=128, blank=False)
     desc = models.CharField('接口描述', max_length=256, blank=True)
     body_type = models.CharField('参数类型选择', max_length=32, blank=True)
