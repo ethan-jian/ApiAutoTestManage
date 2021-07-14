@@ -255,7 +255,7 @@ def delete_api(request, *args, **kwargs):
 @require_http_methods(['POST'])
 def api_upload_api(request, *args, **kwargs):
     """
-    删除
+    上传文件
     :param request:
     :param args:
     :param kwargs:

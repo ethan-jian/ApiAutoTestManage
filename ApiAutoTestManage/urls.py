@@ -45,6 +45,7 @@ urlpatterns = [
     path(r'api/EditApi', api_view.edit_api),
     path(r'api/DeleteApi', api_view.delete_api),
     path(r'api/RunApi', api_view.run_api),
+    path(r'api/Upload', api_view.api_upload_api),
 
     path(r'api/AddCaseSet', caseSet_view.add_case_set),
     path(r'api/ListCaseSet', caseSet_view.get_case_set_info),
