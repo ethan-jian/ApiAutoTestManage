@@ -139,7 +139,7 @@ class BaseView(Reponse):
         """
         上传文件接口
         """
-        data = request.files
+        data = request.FILES.get("file")
         file = data['file']
         if os.path.exists(os.path.join(file_path, file.filename)):
             self.message = "文件已存在，请修改文件名字后再上传"
