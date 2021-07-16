@@ -11,10 +11,15 @@ def encode_object(obj):
         return str(obj)
 
 
+def get_files():
+    FILE_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))+"/files/"
+    if not os.path.exists(FILE_PATH):
+        os.mkdir(FILE_PATH)
 
-file_path = os.path.abspath('../../..') + r'/files/'
-if not os.path.exists(file_path):
-    os.makedirs(file_path)
+    return FILE_PATH
+
+
 
 if __name__ == '__main__':
     pass
+    print(get_files())

@@ -10,7 +10,7 @@ from django.views.generic import View
 from django.db import connection
 import os
 
-from interface_app.util.utils import file_path
+from interface_app.util.utils import get_files
 
 
 class BaseView(Reponse):
@@ -133,24 +133,6 @@ class BaseView(Reponse):
             self.rs_list = self.response_success(self.total_count, list(obj_set))
 
         return self.rs_list
-
-
-    def api_upload(self, request, *args, **kwargs):
-        """
-        上传文件接口
-        """
-        data = request.FILES.get("file")
-        file = data['file']
-        if os.path.exists(os.path.join(file_path, file.filename)):
-            self.message = "文件已存在，请修改文件名字后再上传"
-
-            return self.response_success(0, None)
-
-        else:
-            file.save(os.path.join(file_path, file.filename))
-            self.message = "上传成功"
-
-            return self.response_success(0, os.path.join(file_path, file.filename))
 
 
     def execute_sql(self, sql=""):

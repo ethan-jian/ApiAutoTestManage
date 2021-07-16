@@ -1,4 +1,5 @@
 import json
+import os
 
 from django.db.models import F
 from django.contrib.auth.decorators import login_required
@@ -13,14 +14,15 @@ from interface_app.models import Api, Project
 from django.contrib.auth.models import User
 
 from interface_app.util.http_run import Run
-from interface_app.util.utils import encode_object
+from interface_app.util.utils import encode_object, get_files
 from interface_app.views.base_view import BaseView
 from interface_app.libs.httprunner.api import HttpRunner
+from interface_app.views.file_view import FileView
 
 response = Reponse()
 
 
-class ApiView(BaseView):
+class ApiView(BaseView, FileView):
     Model = Api
     form = ApiForm
     add_file_k = 'project_name'  # 接口增加的字段名k
@@ -60,8 +62,6 @@ def run_api(request, *args, **kwargs):
     url = body['url']
     skip = body['skip']
     extract = [{n['key']: n['value'] for n in body['extract'] if n['key'] != None or n['value'] != None}]
-    # [{key: "content.code", value: "200", remark: null, validateType: "equals"}]
-    # [{'equals': ['content.code', 200]}]
     validate = [{n['validateType']: [n['key'], json.loads(n['value'])] for n in body['validate'] if
                  n['key'] != None or n['value'] != None}]
     print("校验")
@@ -120,51 +120,51 @@ def run_api(request, *args, **kwargs):
     }
 
     ## 接口用列
-    test_data = {
-        "testcases": [
-            {
-                "teststeps": [
-                    {
-                        "name": name,
-                        "request": {
-                            "method": method,
-                            "files": {
-
-                            },
-                            "data": {
-
-                            },
-                            "url": base_url + url,
-                            "params": {
-
-                            },
-                            "headers": {
-
-                            },
-                            "json": json.loads(body_json),
-                        },
-                        "times": 1,
-                        "extract": extract,
-                        "validate": validate
-                    }
-                ],
-                "config": {
-                    "variables": {
-
-                    },
-                    "name": case_name,
-                    "functions": {
-                    }
-                }
-            }
-        ],
-        "project_mapping": {
-            "functions": {
-
-            },
-            "variables": variables
-        }
-    }
+    # test_data1 = {
+    #     "testcases": [
+    #         {
+    #             "teststeps": [
+    #                 {
+    #                     "name": name,
+    #                     "request": {
+    #                         "method": method,
+    #                         "files": {
+    #
+    #                         },
+    #                         "data": {
+    #
+    #                         },
+    #                         "url": base_url + url,
+    #                         "params": {
+    #
+    #                         },
+    #                         "headers": {
+    #
+    #                         },
+    #                         "json": json.loads(body_json),
+    #                     },
+    #                     "times": 1,
+    #                     "extract": extract,
+    #                     "validate": validate
+    #                 }
+    #             ],
+    #             "config": {
+    #                 "variables": {
+    #
+    #                 },
+    #                 "name": case_name,
+    #                 "functions": {
+    #                 }
+    #             }
+    #         }
+    #     ],
+    #     "project_mapping": {
+    #         "functions": {
+    #
+    #         },
+    #         "variables": variables
+    #     }
+    # }
 
     runner = HttpRunner()
 
@@ -261,8 +261,18 @@ def api_upload_api(request, *args, **kwargs):
     :param kwargs:
     :return:
     """
-    obj = ApiView(request, *args, **kwargs)
-
+    obj = FileView()
     return obj.api_upload(request, *args, **kwargs)
+    # up_file = request.FILES.get("file", None)
+    # if not up_file:
+    #     return
+    # else:
+    #     file_path = get_files()+up_file.name
+    #     with open(file_path, 'wb+') as f:
+    #         for chunk in up_file.chunks():
+    #             f.write(chunk)
+    #
+    #     return response.response_success(0, file_path)
+
 
 
