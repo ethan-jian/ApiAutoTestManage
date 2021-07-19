@@ -52,10 +52,15 @@ def run_api(request, *args, **kwargs):
     :return:
     """
     body = json.loads(request.body, encoding='utf-8')
+    print(body)
     name = body['name']
     base_url = body['baseUrl']
     up_func = body['upFunc']
-    body_form_data = body['upFunc']
+    body_form_data = [{n['key']: n['value'] for n in body['bodyFormData'] if n['key'] != None or n['value'] != None}]
+    # (
+    #     variable['value'].split('/')[-1], open(variable['value'], 'rb'),
+    #     CONTENT_TYPE['.{}'.format(variable['value'].split('.')[-1])])
+
     body_json = body['bodyJson']
     method = body['method']
     url_param = body['urlParam']
@@ -64,7 +69,7 @@ def run_api(request, *args, **kwargs):
     extract = [{n['key']: n['value'] for n in body['extract'] if n['key'] != None or n['value'] != None}]
     validate = [{n['validateType']: [n['key'], json.loads(n['value'])] for n in body['validate'] if
                  n['key'] != None or n['value'] != None}]
-    print("校验")
+    print(extract)
     if validate[0] == {}:
         validate = []
     print(validate)
@@ -74,6 +79,7 @@ def run_api(request, *args, **kwargs):
     variables = models.Project.objects.filter(id=project_id).values("variables")
     variables = list(variables)[0]['variables']
     variables = {n['key']: n['value'] for n in json.loads(variables)}
+
     ## 接口调试
     test_data = {
         "testcases": [
