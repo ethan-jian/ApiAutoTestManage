@@ -1,7 +1,7 @@
 import os
 
 from interface_app.libs.reponse import Reponse
-from interface_app.util.utils import get_files
+from interface_app.util.utils import get_file_path
 
 class FileView(Reponse):
 
@@ -13,7 +13,7 @@ class FileView(Reponse):
         if not up_file:
             return self.response_failed("上传不能为空")
         else:
-            file_path = get_files() + up_file.name
+            file_path = get_file_path() + up_file.name
             if os.path.exists(file_path):
                 return self.response_failed("已存在")
             else:

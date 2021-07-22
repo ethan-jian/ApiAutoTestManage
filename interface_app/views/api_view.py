@@ -14,7 +14,7 @@ from interface_app.models import Api, Project
 from django.contrib.auth.models import User
 
 from interface_app.util.http_run import Run
-from interface_app.util.utils import encode_object, get_files
+from interface_app.util.utils import encode_object, FILE_TYPE
 from interface_app.views.base_view import BaseView
 from interface_app.libs.httprunner.api import HttpRunner
 from interface_app.views.file_view import FileView
@@ -51,79 +51,68 @@ def run_api(request, *args, **kwargs):
     :param kwargs:
     :return:
     """
-    body = json.loads(request.body, encoding='utf-8')
-    print(body)
-    name = body['name']
-    base_url = body['baseUrl']
-    up_func = body['upFunc']
-    body_form_data = [{n['key']: n['value'] for n in body['bodyFormData'] if n['key'] != None or n['value'] != None}]
-    # (
-    #     variable['value'].split('/')[-1], open(variable['value'], 'rb'),
-    #     CONTENT_TYPE['.{}'.format(variable['value'].split('.')[-1])])
-
-    body_json = body['bodyJson']
-    method = body['method']
-    url_param = body['urlParam']
-    url = body['url']
-    skip = body['skip']
-    extract = [{n['key']: n['value'] for n in body['extract'] if n['key'] != None or n['value'] != None}]
-    validate = [{n['validateType']: [n['key'], json.loads(n['value'])] for n in body['validate'] if
-                 n['key'] != None or n['value'] != None}]
-    print(extract)
-    if validate[0] == {}:
-        validate = []
-    print(validate)
-    header = body['header']
-    down_func = body['downFunc']
-    project_id = body['projectId']
-    variables = models.Project.objects.filter(id=project_id).values("variables")
-    variables = list(variables)[0]['variables']
-    variables = {n['key']: n['value'] for n in json.loads(variables)}
-
-    ## 接口调试
+    # 接口调试
     test_data = {
         "testcases": [
             {
                 "teststeps": [
                     {
-                        "name": name,
+                        "name": 'name',
                         "request": {
-                            "method": method,
-                            "files": {
-
-                            },
-                            "data": {
-
-                            },
-                            "url": base_url + url,
-                            "params": {
-
-                            },
-                            "headers": {
-
-                            },
-                            "json": json.loads(body_json)
+                            "method": 'POST',
+                            "files": {},
+                            "data": {},
+                            "url": 'http://localhost/api',
+                            "params": {},
+                            "headers": {},
+                            "json": {}
 
                         },
-                        "extract": extract,
-
-                        "validate": validate,
+                        "extract": {},
+                        "validate": {},
                     }
                 ],
                 "config": {
                     "variables": {
-
                     }
                 }
             }
         ],
         "project_mapping": {
-            "functions": {
-            },
-
-            "variables": variables
+            "functions": {},
+            "variables": {}
         }
     }
+
+    body = json.loads(request.body, encoding='utf-8')
+    test_data['testcases'][0]['teststeps'][0]['name'] = body['name']
+    test_data['testcases'][0]['teststeps'][0]['request']['method'] = body['method']
+    files = test_data['testcases'][0]['teststeps'][0]['request']['files']
+    data = test_data['testcases'][0]['teststeps'][0]['request']['data']
+    body_form_data = [n for n in body['bodyFormData'] if n['key'] != None]
+    for n in body_form_data:
+        if n["bodyFormDataType"] == "file":
+            files.update({n["key"]: (n['value'].split('/')[-1], open(n['value'], 'rb'),
+                                     FILE_TYPE['.{}'.format(n['value'].split('.')[-1])])})
+        elif n["bodyFormDataType"] == "string":
+            data.update({n["key"]: n["value"]})
+    test_data['testcases'][0]['teststeps'][0]['request']['url'] = body['baseUrl'] + body['url']
+    test_data['testcases'][0]['teststeps'][0]['request']['params'] = {n['key']: n['value'] for n in body['urlParam'] if
+                                                                n['key'] != None}
+    test_data['testcases'][0]['teststeps'][0]['request']['headers'] = {n['key']: n['value'] for n in body['header'] if
+                                                                 n['key'] != None}
+    test_data['testcases'][0]['teststeps'][0]['request']['json'] = json.loads(body['bodyJson'])
+    test_data['testcases'][0]['teststeps'][0]['extract'] = {n['key']: n['value'] for n in body['extract'] if n['key'] != None or n['value'] != None}
+    test_data['testcases'][0]['teststeps'][0]['validate'] = {n['key']: n['value'] for n in body['validate'] if n['key'] != None or n['value'] != None}
+    project_id = body['projectId']
+    variables = models.Project.objects.filter(id=project_id).values("variables")
+    variables = list(variables)[0]['variables']
+    test_data['testcases'][0]['config']['variables'] = {n['key']: n['value'] for n in json.loads(variables)}
+#    test_data['testcases']['project_mapping']['functions'] = {n['key']: n['value'] for n in body['functions'] if
+#                                                              n['key'] != None or n['value'] != None}
+#     test_data['testcases']['project_mapping']['variables'] = {n['key']: n['value'] for n in body['variables'] if
+#                                                               n['key'] != None or n['value'] != None}
+
 
     ## 接口用列
     # test_data1 = {
@@ -171,9 +160,8 @@ def run_api(request, *args, **kwargs):
     #         "variables": variables
     #     }
     # }
-
+    print(test_data)
     runner = HttpRunner()
-
     runner.run(test_data)
     jump_res = json.dumps(runner._summary, ensure_ascii=False, default=encode_object, cls=JSONEncoder)
     print(jump_res)
@@ -279,6 +267,3 @@ def api_upload_api(request, *args, **kwargs):
     #             f.write(chunk)
     #
     #     return response.response_success(0, file_path)
-
-
-

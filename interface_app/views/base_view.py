@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import IntegrityError
 from django.db.models import Q
@@ -10,7 +12,6 @@ from django.views.generic import View
 from django.db import connection
 import os
 
-from interface_app.util.utils import get_files
 
 
 class BaseView(Reponse):
@@ -97,7 +98,7 @@ class BaseView(Reponse):
         """
         id = self.body.get('id', None)
         self.body = {key: val for key, val in self.body.items() if key != 'id'}
-        self.Model.objects.filter(id=id).update(**self.body)
+        self.Model.objects.filter(id=id).update(**self.body, update_time=datetime.now())
 
         return self.response_success(0, None)
 
