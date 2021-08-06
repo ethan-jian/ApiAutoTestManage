@@ -101,7 +101,7 @@ def run_api(request, *args, **kwargs):
                                                                 n['key'] != None}
     test_data['testcases'][0]['teststeps'][0]['request']['headers'] = {n['key']: n['value'] for n in body['header'] if
                                                                  n['key'] != None}
-    test_data['testcases'][0]['teststeps'][0]['request']['json'] = json.loads(body['bodyJson'])
+    #test_data['testcases'][0]['teststeps'][0]['request']['json'] = json.loads(body['bodyJson'])
     test_data['testcases'][0]['teststeps'][0]['extract'] = {n['key']: n['value'] for n in body['extract'] if n['key'] != None or n['value'] != None}
     test_data['testcases'][0]['teststeps'][0]['validate'] = {n['key']: n['value'] for n in body['validate'] if n['key'] != None or n['value'] != None}
     project_id = body['projectId']
