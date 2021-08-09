@@ -27,7 +27,6 @@ class Reponse(object):
         """
         self.totalCount = totalCount
         self.code = 200
-        self.message = "操作成功"
         self.data = data
 
         return self.common_response()
